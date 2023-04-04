@@ -1,0 +1,22 @@
+api:
+    dashboard: true
+
+entryPoints:
+    http:
+        address: ":80"
+    https:
+        address: ":443"
+
+providers:
+    docker:
+        endpoint: "unix:///var/run/docker.sock"
+        #network: docker
+        exposedByDefault: false
+
+serversTransport:
+    insecureSkipVerify: true
+
+tls:
+    certificates:
+        - certFile: "/etc/certs/cert.pem"
+          keyFile: "/etc/certs/key.pem"

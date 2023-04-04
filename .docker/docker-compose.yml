@@ -1,0 +1,82 @@
+version: '3.7'
+
+services:
+
+    ###############################
+    ## [Router]
+    ## Permet de rediriger les domaines sur les bons container et de faire du https
+    ###############################
+    traefik:
+        container_name: ${NAMESPACE}_traefik
+        build: traefik
+        networks: [docker]
+        ports: [ "80:80", "443:443" ]
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        labels:
+            traefik.enable: "true"
+            traefik.http.routers.dashboard.rule: "Host(`traefik.localhost`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+            traefik.http.routers.dashboard.service: "api@internal"
+            traefik.http.routers.dashboard.tls: true
+            traefik.http.routers.dashboard.entrypoints: "https"
+
+    ###############################
+    ##           [PHP]           ##
+    ###############################
+    php:
+        container_name: ${NAMESPACE}_php
+        build: php
+        networks: [docker]
+        volumes:
+            - ../www:/var/www:delegated
+        labels:
+            traefik.enable: "true"
+            # Replace with your domain
+            traefik.http.routers.app.rule: "Host(`${SERVER_NAME}`)"
+            traefik.http.services.app.loadbalancer.server.scheme: "https"
+            traefik.http.services.app.loadbalancer.server.port: "80"
+            traefik.http.routers.app.tls: true
+            traefik.http.routers.app.entrypoints: "https"
+
+    ###############################
+    ##         [MariaDB]         ##
+    ###############################
+    mariadb:
+        container_name: ${NAMESPACE}_mariadb
+        build: mariadb
+        networks: [docker]
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        volumes:
+            # All .sql files will *always* be executed on container startup
+            #- ./mariadb/dumps:/docker-entrypoint-initdb.d
+            # Uncomment next to enable database persistance
+            - ./mariadb/volumes:/var/lib/mysql
+
+    ###############################
+    ##         [Adminer]         ##
+    ###############################
+    adminer:
+        container_name: ${NAMESPACE}_adminer
+        build: adminer
+        networks: [docker]
+        environment:
+            ADMINER_DEFAULT_DB_DRIVER: mysql
+            ADMINER_DEFAULT_DB_HOST: mariadb
+            ADMINER_DEFAULT_DB_NAME: ${MYSQL_DATABASE}
+            ADMINER_DESIGN: dracula
+            ADMINER_PLUGINS: tables-filter
+        labels:
+            traefik.enable: "true"
+            traefik.http.routers.adminer.rule: "Host(`adminer.localhost`)"
+            traefik.http.services.adminer.loadbalancer.server.scheme: "http"
+            traefik.http.services.adminer.loadbalancer.server.port: "9000"
+            traefik.http.routers.adminer.tls: true
+            traefik.http.routers.adminer.entrypoints: "https"
+
+networks:
+    docker:
+        name: ${NAMESPACE}_docker
