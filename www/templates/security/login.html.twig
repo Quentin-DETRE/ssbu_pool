@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in{% endblock %}
+
+{% block body %}
+<style>
+    *{font: 18px/1.5 sans-serif; margin:0; padding:0;}
+    body {display:flex; height:100vh;flex-direction:column; align-items:center; background: linear-gradient(white, 85% ,#bf0000); }
+    h1 {font-weight:bold; font-size:2em; width:fit-content;}
+    h2 {font-size:1.5em; padding:0; margin-bottom:0;width:fit-content;}
+    h3 {font-size:1.25em; margin-top:0.5vh; margin-bottom:0.5vh;width:fit-content; }
+
+    .header {display: flex; justify-content:space-between; align-items:center; width:100vw; margin:0; padding:0; box-shadow: 0px 0px 5px black;  }
+    .header button {margin-left:50%;}
+    
+    button{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
+    button:hover {cursor:pointer; background-color:#690000;}
+
+
+</style>
+
+<div class="header"> 
+    <a href="{{ path("app_homepage") }}"><button>Retour</button></a>
+
+    <h1>SSBU Pool<h1>
+</div>
+<form method="post">
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    {% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
+
+
+    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+    <label for="inputEmail">Email</label>
+    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+    <label for="inputPassword">Password</label>
+    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+
+    <input type="hidden" name="_csrf_token"
+           value="{{ csrf_token('authenticate') }}"
+    >
+
+    {#
+        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+        See https://symfony.com/doc/current/security/remember_me.html
+
+        <div class="checkbox mb-3">
+            <label>
+                <input type="checkbox" name="_remember_me"> Remember me
+            </label>
+        </div>
+    #}
+
+    <button class="btn btn-lg btn-primary" type="submit">
+        Sign in
+    </button>
+</form>
+{% endblock %}

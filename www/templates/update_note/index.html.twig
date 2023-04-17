@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Update note{% endblock %}
+
+{% block body %}
+<style>
+*{font: 18px/1.5 sans-serif; margin:0; padding:0;}
+    body {display:flex; height:100vh; width:100vw;flex-direction:column; align-items:center; background: linear-gradient(white, 85% ,#bf0000); }
+    h1 {font-weight:bold; font-size:2em; width:fit-content;}
+    h2 {font-size:1.5em; padding:0; margin-bottom:0;width:fit-content;}
+    h3 {font-size:1.25em; margin-top:0.5vh; margin-bottom:0.5vh;width:fit-content; }
+
+    .header {display: flex; justify-content:space-between; align-items:center; width:100vw; margin:0; padding:0; box-shadow: 0px 0px 5px black;  }
+    .header button {margin-left:50%;}
+    button{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
+    button:hover {cursor:pointer; background-color:#690000;}
+    
+    .submit{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
+    .submit:hover {cursor:pointer; background-color:#690000;}
+    
+
+
+    .loginOption { position: inherit; display: flex; justify-content:space-evenly;}
+
+    .loginOption button {margin-right:1vw;}
+
+    form { display:grid; grid-layout; }
+
+</style>
+
+
+<div class="header"> 
+    <a href="{{ path('app_character_detail', {slug: fighter.getIterationNumber()}) }}"><button>Retour</button></a>
+    <h1>SSBU Pool<h1>
+
+</div>
+<div class="example-wrapper">
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.content) }}
+        <input type="submit" value="Submit" class="submit">
+    {{ form_end(form) }}
+</div>
+{% endblock %}

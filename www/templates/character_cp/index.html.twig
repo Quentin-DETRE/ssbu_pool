@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Champion Pool{% endblock %}
+
+{% block body %}
+<style>
+    *{font: 18px/1.5 sans-serif; margin:0; padding:0;}
+    body {display:flex; height:100vh;flex-direction:column; align-items:center; background: linear-gradient(white, 85% ,#bf0000); }
+    h1 {font-weight:bold; font-size:2em; width:fit-content;}
+    h2 {font-size:1.5em; padding:0; margin-bottom:0;width:fit-content;}
+    h3 {font-size:1.25em; margin-top:0.5vh; margin-bottom:0.5vh;width:fit-content; }
+
+    
+    header {display: flex; justify-content:center; align-items:center; width:100vw; margin:0; padding:0; box-shadow: 0px 0px 5px black;  }
+    header h1 {margin-left:40vw; margin-right:40vw;}
+    button{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
+    button:hover {cursor:pointer;}
+
+    .fighterCard { display:flex; background:white; padding:5px; justify-content:space-between; align-items:center; border: 1px solid black; border-radius:0.5em;}
+    .imgFighters { height: auto; width:35%;}
+    .imgSerieFighter { height: auto; width:25%; }
+    #gridFighters { display: grid; grid-template-columns: 11vw 11vw 11vw 11vw 11vw 11vw 11vw 11vw; grid-column-gap: 1vw; grid-row-gap:1vw;}
+
+</style>
+    {% if is_granted("ROLE_USER") %}
+    <header>
+            <h1>Hello {{ app.user.username }}</h1>
+            <a href="{{ path("app_logout") }}"><button>Logout</button></a>
+    </header>
+    <div id="gridFighters">
+    {% for element in fighters %}
+    <a class="fighterCard" href="{{ path("app_character_detail", {slug: element.getCharacterChoice().getIterationNumber()}) }}">
+        <img class="imgFighters" src="fighters/250_{{ element.getCharacterChoice().getImagePath() }}"/>
+        <p>{{ element.getCharacterChoice().getName() }}</p> 
+        <form method="post" action="{{ path("app_cp_drop", {id: element.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
+            <input type="hidden" name="_method" value='DELETE'>
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ element.id) }}">
+            <button type="submit">Delete</button>
+        </form>
+    </a>        
+    {% endfor %}
+    <a class="fighterCard" href="{{ path("app_character_choice") }}"><img class="imgFighters" src="plus.webp">Add a character</img></a>
+    </div>
+    {% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ fighter.getName() }} detail{% endblock %}
+
+{% block body %}
+<style>
+    *{font: 18px/1.5 sans-serif; margin:0; padding:0;}
+    body {display:flex; height:100vh;flex-direction:column; align-items:center; background: linear-gradient(white, 85% ,#bf0000); }
+    h1 {font-weight:bold; font-size:2em; width:fit-content;}
+    h2 {font-size:1.5em; padding:0; margin-bottom:0;width:fit-content;}
+    h3 {font-size:1.25em; margin-top:0.5vh; margin-bottom:0.5vh;width:fit-content; }
+
+    .header {display: flex; justify-content:space-between; align-items:center; width:100vw; margin:0; padding:0; box-shadow: 0px 0px 5px black;  }
+    .header button {margin-left:50%;}
+    
+    button{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
+    button:hover {cursor:pointer; background-color:#690000;}
+
+    .fighterContainer { display:flex; width:90vw; margin-top:2vh; justify-content:space-between;}
+
+    .imageContainer {display:flex; width:30%; align-items:center; flex-direction:column; margin-right:2vw;}
+    .imageContainer img {width:100%;  }
+
+    .descriptionContainer {width:30%;  border:1px solid #757575;border-radius:0.5em;  padding: 2em}
+    .adminOption {display:flex;}
+    .adminOption a { margin-right:1%;}
+
+    .formNoteContainer {border-radius:0.5em; padding: 2em; margin-top:2em; box-shadow: 0px 0px 5px black; }
+    .formNoteContainer h1{margin-bottom:-1vh;}
+    .formNoteContainer form{display:flex; flex-direction:column;}
+
+    #serie {display: flex; align-items:center;}
+    #serie img {width:10%}
+
+    .noteContainer { display:grid; grid-template-columns:27vw; }
+    .noteContainer > * {width:25vw; height:fit-content; border:1px solid #757575;border-radius:0.5em;padding: 2em;  }
+
+    .topNote {display:flex; align-items:center; justify-content:space-between;}
+    .topNote h1 {margin-bottom: 0;}
+    .noteButton{position:inherit;height:fit-content; }
+</style>    
+<div class="header"> 
+    <a href="{{ path("app_character_cp") }}"><button>Retour</button></a>
+
+    <h1>SSBU Pool<h1>
+</div>
+
+<div class="fighterContainer">
+    <div class="imageContainer">
+        <img src="/fighters/{{ fighter.getImagePath() }}"></img>
+        <h1>N°{{ fighter.getIterationNumber() }}</h1>
+    </div>
+    <div class="descriptionContainer">
+        <h1>Name : {{ fighter.getName() }}</h1>
+        <h3 id="serie">Serie : {{ fighter.getSerie().getName() }}<img src="/serie/{{fighter.getSerie().getImagePath()}}"></img></h3>
+        
+        <h3>Weight : {{ fighter.getWeight() }}</h3>
+        <h3>Speed : {{ fighter.getSpeed() }}</h3>
+        <h3>Tier : {{ fighter.getTier() }}</h3>
+
+        {% if is_granted("ROLE_SUPER_ADMIN") %}
+        <div class="adminOption">
+            <a href="{{ path("app_update_character", {slug: fighter.getIterationNumber()}) }}"><button>Edit</button></a>
+            <form method="post" action="{{ path("app_character_detail_delete", {slug: fighter.getIterationNumber()}) }}" onsubmit="return confirm('Are you sure ?')">
+                <input type="hidden" name="_method" value='DELETE'>
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ fighter.id) }}">
+                <button type="submit">Delete</button>
+            </form>
+        </div>
+        {% endif %}
+        <div class="formNoteContainer">
+            <h1>Create a note</h1>
+            <form action="{{ path('app_create_note', {slug: fighter.getIterationNumber()}) }}" method="post" name="create_note">
+                <h2>Title</h2>
+                <input type="text" name="_title"></input>
+                <h2>Content</h2>
+                <textArea name="_content"></textArea>
+                <button type="submit">Add note</button>
+            </form>
+        </div>
+    </div>
+    <div class="noteContainer">
+        {% for note in notes %}
+        <div>
+            <div class="topNote">
+            <h1>{{ note.title }}</h1>
+                {% if ( is_granted('NOTE_VIEW', note)) or ( is_granted("ROLE_ADMIN") ) %}
+                <div class="noteButton">
+                    {% if is_granted('NOTE_VIEW', note) %}
+                    <a href="{{ path("app_update_note", {id: note.getId()}) }}">
+                        <button>Edit</button>
+                    </a>
+                    {% endif %}
+
+                    <form method="post" action="{{ path("app_character_detail_delete", {slug: fighter.getIterationNumber(), id: note.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
+                        <input type="hidden" name="_method" value='DELETE'>
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ note.id) }}">
+                        <button type="submit">Delete</button>
+                    </form>
+
+                </div>
+                {% endif %}
+            </div>
+            <p>{{ note.content }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+
+</div>
+{% endblock %}
