@@ -20,7 +20,7 @@ class UpdateCharacterController extends AbstractController
     public function index(EntityManagerInterface $entityManager, Request $request, string $slug, SluggerInterface $slugger): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
-        $characterChoice =  $entityManager->getRepository(CharacterChoice::class)->findOneBy(['iterationNumber' => $slug]);
+        $characterChoice = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['iterationNumber' => $slug]);
         $form = $this->createForm(CharacterType::class, $characterChoice);
 
         $form->handleRequest($request);
@@ -64,7 +64,6 @@ class UpdateCharacterController extends AbstractController
 
             $entityManager->persist($characterChoice);
             $entityManager->flush();
-
 
 
             return $this->redirectToRoute('app_character_detail', ['slug' => $characterChoice->getIterationNumber()]);

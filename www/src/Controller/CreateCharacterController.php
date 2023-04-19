@@ -56,18 +56,16 @@ class CreateCharacterController extends AbstractController
                     $width = $height * $ratio;
                 } else {
                     $height = $width / $ratio;
+
                 }
                 $photo = $imagine->open($fullFile);
                 $photo->resize(new Box($width, $height))->save($reduceFile);
-            }
-            else {
+            } else {
                 $characterChoice->setImagePath('Mario_SSBU.png');
             }
 
             $entityManager->persist($characterChoice);
             $entityManager->flush();
-
-
 
 
             return $this->redirectToRoute('app_character_choice');

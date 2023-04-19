@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class CharacterChoiceController extends AbstractController
 {
-    #[Route('/character', name: 'app_character_choice', methods: ['GET'])]
+    #[Route('/character', name: 'app_character_choice', methods: 'GET')]
     public function index(EntityManagerInterface $entityManager,): Response
     {
         $characterChoices = $entityManager->getRepository(CharacterChoice::class)->getAllCharacterChoices();
