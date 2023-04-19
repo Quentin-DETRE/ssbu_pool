@@ -13,24 +13,27 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class CharacterChoiceController extends AbstractController
 {
-    #[Route('/character', name: 'app_character_choice')]
-    public function index(EntityManagerInterface $entityManager, Request $request, UserInterface $user): Response
+    #[Route('/character', name: 'app_character_choice', methods: ['GET'])]
+    public function index(EntityManagerInterface $entityManager,): Response
     {
         $characterChoices = $entityManager->getRepository(CharacterChoice::class)->getAllCharacterChoices();
 
-        if ($request->query->get("id")) {
-            $characterChoice = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['id' => $request->query->get('id')]);
-            if (!$entityManager->getRepository(CharacterCp::class)->findBy(['user' => $user, 'characterChoice' => $characterChoice])) {
-                $characterCp = new CharacterCp();
-                $characterCp->setUser($user);
-                $characterCp->setCharacterChoice($characterChoice);
-                $entityManager->persist($characterCp);
-                $entityManager->flush();
-            }
-            return $this->redirectToRoute('app_character_cp');
-        }
         return $this->render('character_choice/index.html.twig', [
             'characterChoices' => $characterChoices,
         ]);
+    }
+
+    #[Route('/character/add/{id}', name: 'app_create_character_cp', methods: 'POST')]
+    public function createCharacterCp(EntityManagerInterface $entityManager, UserInterface $user, int $id): Response
+    {
+        $characterChoice = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['id' => $id]);
+        if (!$entityManager->getRepository(CharacterCp::class)->findBy(['user' => $user, 'characterChoice' => $characterChoice])) {
+            $characterCp = new CharacterCp();
+            $characterCp->setUser($user);
+            $characterCp->setCharacterChoice($characterChoice);
+            $entityManager->persist($characterCp);
+            $entityManager->flush();
+        }
+        return $this->redirectToRoute('app_character_cp');
     }
 }

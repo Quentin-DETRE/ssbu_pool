@@ -11,9 +11,11 @@
     h3 {font-size:1.25em; margin-top:0.5vh; margin-bottom:0.5vh;width:fit-content; }
 
     .header {display: flex; justify-content:space-between; align-items:center; width:100%; margin:0; padding:0; box-shadow: 0px 0px 5px black;  }
-    .header button {margin-left:50%;}
-    button{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
-    button:hover {cursor:pointer; background-color:#690000;}
+    .header button {margin-left:50%; padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
+    .header button:hover { background-color:#690000;}
+
+    button {background: none; border: none; display: flex; align-items: center; justify-content: space-between;}
+    button:hover {cursor:pointer}
     
     .example-wrapper { width: 95vw; font: 18px/1.5 sans-serif; display: flex; align-items: center; flex-direction:column; }
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
@@ -33,7 +35,8 @@
 
 <div class="header"> 
     <a href="{{ path('app_character_cp') }}"><button>Retour</button></a>
-    <h1>SSBU Pool<h1>
+    <h1>SSBU Pool</h1>
+    <div class="Placeholder"></div>
 
 </div>
 <div class="example-wrapper">
@@ -41,11 +44,14 @@
 
     <div id="gridCharacterChoice">
     {% for characterChoice in characterChoices %}
-    <a class="fighterCard" href="{{ path("app_character_choice", {id: characterChoice.getId()}) }}">
-        <img class="imgCharacterChoice" src="fighters/250_{{ characterChoice.getImagePath() }}"></img>
-            <p>{{ characterChoice.getName() }}</p>
-        <img class="imgSerie" src="serie/{{ characterChoice.getSerie().getImagePath() }}">
-    </a>
+        <form class="fighterCard" action="{{ path('app_create_character_cp', {id: characterChoice.getId()}) }}" method="POST">
+            <input type="hidden" name="id" value="{{ characterChoice.getId() }}">
+            <button type="submit">
+                <img class="imgCharacterChoice" src="fighters/250_{{ characterChoice.getImagePath() }}" />
+                <p>{{ characterChoice.getName() }}</p>
+                <img class="imgSerie" src="serie/{{ characterChoice.getSerie().getImagePath() }}" />
+            </button>
+        </form>
 
     {% endfor %}
     {% if is_granted("ROLE_ADMIN") %}

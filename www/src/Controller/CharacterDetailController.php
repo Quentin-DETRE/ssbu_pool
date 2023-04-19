@@ -26,6 +26,9 @@ class CharacterDetailController extends AbstractController
         $note = new Note();
         $form = $this->createForm(NoteType::class, $note);
 
+        if (!$characterCp) {
+            return $this->redirectToRoute("app_character_cp");
+        }
         return $this->render('character_detail/index.html.twig', [
             'characterCp' => $characterCp,
             'notes' => $notes,
