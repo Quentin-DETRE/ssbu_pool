@@ -16,22 +16,21 @@ class CharacterChoiceController extends AbstractController
     #[Route('/character', name: 'app_character_choice')]
     public function index(EntityManagerInterface $entityManager, Request $request, UserInterface $user): Response
     {
-        $fighters = $entityManager->getRepository(CharacterChoice::class)->findAll();
+        $characterChoices = $entityManager->getRepository(CharacterChoice::class)->getAllCharacterChoices();
 
         if ($request->query->get("id")) {
-            $fighter = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['id'=>$request->query->get('id')]);
-            if (!$entityManager->getRepository(CharacterCp::class)->findBy(['user'=>$user, 'characterChoice' => $fighter])) {
-                $cp = new CharacterCp();
-                $cp->setUser($user);
-                $cp->setCharacterChoice($fighter);
-                $entityManager->persist($cp);
+            $characterChoice = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['id' => $request->query->get('id')]);
+            if (!$entityManager->getRepository(CharacterCp::class)->findBy(['user' => $user, 'characterChoice' => $characterChoice])) {
+                $characterCp = new CharacterCp();
+                $characterCp->setUser($user);
+                $characterCp->setCharacterChoice($characterChoice);
+                $entityManager->persist($characterCp);
                 $entityManager->flush();
             }
             return $this->redirectToRoute('app_character_cp');
         }
         return $this->render('character_choice/index.html.twig', [
-            'fighters' => $fighters,
+            'characterChoices' => $characterChoices,
         ]);
     }
-
 }

@@ -19,40 +19,39 @@ class ImportSerieCommand extends Command
 {
     protected function configure(): void
     {
-        
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-       
+
         $url = 'https://www.ssbwiki.com/Universe';
 
         $crawler = new Crawler(file_get_contents($url));
 
-        $result = $crawler->filter('.wikitable tr ')->each(function (Crawler $node, $i) {
-    
-            $img =  $node->filter('img')->attr('src');
-          
-            $tmp = explode("/", $img);
-            $imgName = $tmp[count($tmp)-1];
+        $result = $crawler
+            ->filter('.wikitable tr ')
+            ->each(function (Crawler $node, $i) {
 
-            $dir = __DIR__.'/../../public/serie';
-            $path =  $dir."/".$imgName;
+                $img =  $node->filter('img')->attr('src');
 
-            if(!file_exists($path)){
-                $file = file_get_contents($img);
-                file_put_contents($path, $file);
-            }
+                $tmp = explode("/", $img);
+                $imgName = $tmp[count($tmp) - 1];
 
-            return [
-                'name' => $node->filter('ul li  i')->text(),
-                'image' => $imgName
-            ];
-            return $node->text();
+                $dir = __DIR__ . '/../../public/serie';
+                $path =  $dir . "/" . $imgName;
 
-    
-        });
+                if (!file_exists($path)) {
+                    $file = file_get_contents($img);
+                    file_put_contents($path, $file);
+                }
+
+                return [
+                    'name' => $node->filter('ul li  i')->text(),
+                    'image' => $imgName
+                ];
+                return $node->text();
+            });
 
         dump($result);
 

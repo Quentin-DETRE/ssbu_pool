@@ -22,11 +22,11 @@ class Serie
     private ?string $imagePath = null;
 
     #[ORM\OneToMany(mappedBy: 'serie', targetEntity: CharacterChoice::class)]
-    private Collection $characterChoice;
+    private Collection $characterChoices;
 
     public function __construct()
     {
-        $this->characterChoice = new ArrayCollection();
+        $this->characterChoices = new ArrayCollection();
     }
 
     public function __toString()
@@ -66,15 +66,15 @@ class Serie
     /**
      * @return Collection<int, CharacterChoice>
      */
-    public function getCharacterChoice(): Collection
+    public function getCharacterChoices(): Collection
     {
-        return $this->characterChoice;
+        return $this->characterChoices;
     }
 
     public function addCharacterChoice(CharacterChoice $characterChoice): self
     {
-        if (!$this->characterChoice->contains($characterChoice)) {
-            $this->characterChoice->add($characterChoice);
+        if (!$this->characterChoices->contains($characterChoice)) {
+            $this->characterChoices->add($characterChoice);
             $characterChoice->setSerie($this);
         }
 
@@ -83,7 +83,7 @@ class Serie
 
     public function removeCharacterChoice(CharacterChoice $characterChoice): self
     {
-        if ($this->characterChoice->removeElement($characterChoice)) {
+        if ($this->characterChoices->removeElement($characterChoice)) {
             // set the owning side to null (unless already changed)
             if ($characterChoice->getSerie() === $this) {
                 $characterChoice->setSerie(null);

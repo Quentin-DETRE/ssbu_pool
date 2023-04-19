@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\CharacterChoice;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request ;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Form\CharacterType;
@@ -20,33 +20,33 @@ class UpdateCharacterController extends AbstractController
     public function index(EntityManagerInterface $entityManager, Request $request, string $slug, SluggerInterface $slugger): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
-        $character =  $entityManager->getRepository(CharacterChoice::class)->findOneBy(['iterationNumber' => $slug]);
-        $form = $this->createForm(CharacterType::class, $character);
+        $characterChoice =  $entityManager->getRepository(CharacterChoice::class)->findOneBy(['iterationNumber' => $slug]);
+        $form = $this->createForm(CharacterType::class, $characterChoice);
 
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()) 
-        {
-            $character = $form->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $characterChoice = $form->getData();
             $image = $form->get('imagePath')->getData();
 
-            if($image) {
+            if ($image) {
                 $originalImageName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
 
                 $safeImageName = $slugger->slug($originalImageName);
-                $newImageName = $safeImageName.'_SSBU.'.$image->guessExtension();
-            
+                $newImageName = $safeImageName . '_SSBU.' . $image->guessExtension();
+
                 try {
                     $image->move(
-                        $this->getParameter('fighters_directory'), $newImageName
+                        $this->getParameter('fighters_directory'),
+                        $newImageName
                     );
-                } catch (FileException $e){
+                } catch (FileException $e) {
                     dd("CPT");
                 }
 
-                $character->setImagePath($newImageName);
+                $characterChoice->setImagePath($newImageName);
 
                 $imagine = new Imagine();
-                $fullFile = "fighters/". $newImageName;
+                $fullFile = "fighters/" . $newImageName;
                 $reduceFile = "fighters/250_" . $newImageName;
                 list($iwidth, $iheight) = getimagesize($fullFile);
                 $ratio = $iwidth / $iheight;
@@ -62,16 +62,16 @@ class UpdateCharacterController extends AbstractController
             }
 
 
-            $entityManager->persist($character);
+            $entityManager->persist($characterChoice);
             $entityManager->flush();
 
 
-                
-            return $this->redirectToRoute('app_character_detail', ['slug' => $character->getIterationNumber()] );
+
+            return $this->redirectToRoute('app_character_detail', ['slug' => $characterChoice->getIterationNumber()]);
         }
         return $this->render('update_character/index.html.twig', [
             'form' => $form->createView(),
-            'fighter' => $character,
+            'characterChoice' => $characterChoice,
         ]);
     }
 }

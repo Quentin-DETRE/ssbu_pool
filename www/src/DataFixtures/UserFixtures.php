@@ -16,8 +16,7 @@ class UserFixtures extends Fixture
     }
     public function load(ObjectManager $manager): void
     {
-        foreach($this->getUser() as $key=>$userMail)
-        {
+        foreach ($this->getUser() as $key => $userMail) {
             $user = new User();
             $user->setName($userMail["name"]);
             $user->setSurname($userMail["surname"]);
@@ -25,29 +24,30 @@ class UserFixtures extends Fixture
             $user->setEmail($key);
             $user->setUsername($userMail["username"]);
             $user->setPassword($this->hasher->hashPassword($user, $userMail["password"]));
-            
+
             $manager->persist($user);
 
-            $this->addReference($key,$user);
+            $this->addReference($key, $user);
         }
         $manager->flush();
     }
     private function getUser()
     {
-        return ["q-detre@sfi.fr" => [
-            'username' => "QuenDetr",
-            'role' => ['ROLE_SUPER_ADMIN'],
-            'name' => "Quentin",
-            'surname' => "DETRÉ",
-            'password' => "Passw0rd",
-        ],
-        "otakawaisan@gmail.com" => [
-            'username' => "Otakawai",
-            'role' => [],
-            'name' => "Quentin",
-            'surname' => "DETRÉ",
-            'password' => "Passw0rd",
-        ]
-    ];
+        return [
+            "q-detre@sfi.fr" => [
+                'username' => "QuenDetr",
+                'role' => ['ROLE_SUPER_ADMIN'],
+                'name' => "Quentin",
+                'surname' => "DETRÉ",
+                'password' => "Passw0rd",
+            ],
+            "otakawaisan@gmail.com" => [
+                'username' => "Otakawai",
+                'role' => [],
+                'name' => "Quentin",
+                'surname' => "DETRÉ",
+                'password' => "Passw0rd",
+            ]
+        ];
     }
 }

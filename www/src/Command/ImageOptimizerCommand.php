@@ -26,17 +26,16 @@ class ImageOptimizerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
+
         $finder = new Finder();
         $fileSystem = new Filesystem();
         $imagine = new Imagine();
         $finder->in('public/fighters');
         $finder->files()->name(['*.png', '*.webp']);
-        foreach($finder as $file) {
-            $fullFile = "public/fighters/". $file->getRelativePathname();
+        foreach ($finder as $file) {
+            $fullFile = "public/fighters/" . $file->getRelativePathname();
             $reduceFile = "public/fighters/250_" . $file->getRelativePathname();
-            if(!$fileSystem->exists($reduceFile)) 
-            {
+            if (!$fileSystem->exists($reduceFile)) {
                 list($iwidth, $iheight) = getimagesize($fullFile);
                 $ratio = $iwidth / $iheight;
                 $width = self::MAX_WIDTH;

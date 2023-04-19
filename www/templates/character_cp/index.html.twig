@@ -17,9 +17,9 @@
     button:hover {cursor:pointer;}
 
     .fighterCard { display:flex; background:white; padding:5px; justify-content:space-between; align-items:center; border: 1px solid black; border-radius:0.5em;}
-    .imgFighters { height: auto; width:35%;}
-    .imgSerieFighter { height: auto; width:25%; }
-    #gridFighters { display: grid; grid-template-columns: 11vw 11vw 11vw 11vw 11vw 11vw 11vw 11vw; grid-column-gap: 1vw; grid-row-gap:1vw;}
+    .imgCharacterChoice { height: auto; width:35%;}
+    .imgSerie { height: auto; width:25%; }
+    #gridCharacterCp{ display: grid; grid-template-columns: 11vw 11vw 11vw 11vw 11vw 11vw 11vw 11vw; grid-column-gap: 1vw; grid-row-gap:1vw;}
 
 </style>
     {% if is_granted("ROLE_USER") %}
@@ -27,19 +27,19 @@
             <h1>Hello {{ app.user.username }}</h1>
             <a href="{{ path("app_logout") }}"><button>Logout</button></a>
     </header>
-    <div id="gridFighters">
-    {% for element in fighters %}
-    <a class="fighterCard" href="{{ path("app_character_detail", {slug: element.getCharacterChoice().getIterationNumber()}) }}">
-        <img class="imgFighters" src="fighters/250_{{ element.getCharacterChoice().getImagePath() }}"/>
-        <p>{{ element.getCharacterChoice().getName() }}</p> 
-        <form method="post" action="{{ path("app_cp_drop", {id: element.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
+    <div id="gridCharacterCp">
+    {% for characterCp in characterCps %}
+    <a class="fighterCard" href="{{ path("app_character_detail", {slug: characterCp.getCharacterChoice().getIterationNumber()}) }}">
+        <img class="imgCharacterChoice" src="fighters/250_{{ characterCp.getCharacterChoice().getImagePath() }}"/>
+        <p>{{ characterCp.getCharacterChoice().getName() }}</p>
+        <form method="post" action="{{ path("app_cp_drop", {id: characterCp.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
             <input type="hidden" name="_method" value='DELETE'>
-            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ element.id) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ characterCp.id) }}">
             <button type="submit">Delete</button>
         </form>
     </a>        
     {% endfor %}
-    <a class="fighterCard" href="{{ path("app_character_choice") }}"><img class="imgFighters" src="plus.webp">Add a character</img></a>
+    <a class="fighterCard" href="{{ path("app_character_choice") }}"><img class="imgCharacterChoice" src="plus.webp"/>Add a character</a>
     </div>
     {% endif %}
 {% endblock %}

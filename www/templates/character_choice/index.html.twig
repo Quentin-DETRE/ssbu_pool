@@ -19,9 +19,9 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 
     .fighterCard { display:flex; background:white; padding:5px; justify-content:space-between; align-items:center; border: 1px solid black; border-radius:0.5em;}
-    .imgFighters { height: auto; width:35%;}
-    .imgSerieFighter { height: auto; width:25%; }
-    #gridFighters { display: grid; grid-template-columns: 11vw 11vw 11vw 11vw 11vw 11vw 11vw 11vw; grid-gap: 1vw;}
+    .imgCharacterChoice { height: auto; width:35%;}
+    .imgSerie { height: auto; width:25%; }
+    #gridCharacterChoice { display: grid; grid-template-columns: 11vw 11vw 11vw 11vw 11vw 11vw 11vw 11vw; grid-gap: 1vw;}
     
    
     .submit{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
@@ -39,17 +39,17 @@
 <div class="example-wrapper">
     <h1>Chose your fighter</h1>
 
-    <div id="gridFighters">
-    {% for element in fighters %}
-    <a class="fighterCard" href="{{ path("app_character_choice", {id: element.getId()}) }}">
-        <img class="imgFighters" src="fighters/250_{{ element.getImagePath() }}"></img>
-            <p>{{ element.getName() }}</p>  
-        <img class="imgSerieFighter" src="serie/{{ element.getSerie().getImagePath() }}">
+    <div id="gridCharacterChoice">
+    {% for characterChoice in characterChoices %}
+    <a class="fighterCard" href="{{ path("app_character_choice", {id: characterChoice.getId()}) }}">
+        <img class="imgCharacterChoice" src="fighters/250_{{ characterChoice.getImagePath() }}"></img>
+            <p>{{ characterChoice.getName() }}</p>
+        <img class="imgSerie" src="serie/{{ characterChoice.getSerie().getImagePath() }}">
     </a>
 
     {% endfor %}
     {% if is_granted("ROLE_ADMIN") %}
-    <a class="fighterCard" href="{{ path("app_create_character") }}"><img class="imgFighters" src="plus.webp">Add a character</img></a>
+    <a class="fighterCard" href="{{ path("app_create_character") }}"><img class="imgCharacterChoice" src="plus.webp"/>Add a character</a>
     {% endif %}
     </div>
 

@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Entity;
+
 use App\Entity\Serie;
 use App\Repository\CharacterChoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterChoiceRepository::class)]
@@ -15,34 +17,47 @@ class CharacterChoice
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'characterChoice')]
+    #[ORM\ManyToOne(targetEntity: Serie:: class, inversedBy: 'characterChoices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 25)]
     private ?serie $serie = null;
 
     #[ORM\Column(length: 25)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 25)]
     private ?string $name = null;
 
     #[ORM\Column(length: 25)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 25)]
     private ?string $weight = null;
 
     #[ORM\Column(length: 25)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 25)]
     private ?string $speed = null;
 
     #[ORM\Column(length: 3)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 3)]
     private ?string $tier = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 10)]
     private ?string $iterationNumber = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(max: 255)]
     private ?string $imagePath = null;
 
     #[ORM\OneToMany(mappedBy: 'characterChoice', targetEntity: CharacterCp::class)]
-    private Collection $characterCp;
+    private Collection $characterCps;
 
     public function __construct()
     {
-        $this->characterCp = new ArrayCollection();
+        $this->characterCps = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,15 +152,15 @@ class CharacterChoice
     /**
      * @return Collection<int, CharacterCp>
      */
-    public function getCharacterCp(): Collection
+    public function getCharacterCps(): Collection
     {
-        return $this->characterCp;
+        return $this->characterCps;
     }
 
     public function addCharacterCp(CharacterCp $characterCp): self
     {
-        if (!$this->characterCp->contains($characterCp)) {
-            $this->characterCp->add($characterCp);
+        if (!$this->characterCps->contains($characterCp)) {
+            $this->characterCps->add($characterCp);
             $characterCp->setCharacterChoice($this);
         }
 
@@ -154,7 +169,7 @@ class CharacterChoice
 
     public function removeCharacterCp(CharacterCp $characterCp): self
     {
-        if ($this->characterCp->removeElement($characterCp)) {
+        if ($this->characterCps->removeElement($characterCp)) {
             // set the owning side to null (unless already changed)
             if ($characterCp->getCharacterChoice() === $this) {
                 $characterCp->setCharacterChoice(null);

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ fighter.getName() }} detail{% endblock %}
+{% block title %}{{ characterCp.0.getCharacterChoice.getName() }} detail{% endblock %}
 
 {% block body %}
 <style>
@@ -16,12 +16,12 @@
     button{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
     button:hover {cursor:pointer; background-color:#690000;}
 
-    .fighterContainer { display:flex; width:90vw; margin-top:2vh; justify-content:space-between;}
+    .characterChoiceContainer { display:flex; width:90vw; margin-top:2vh; justify-content:space-between;}
 
-    .imageContainer {display:flex; width:30%; align-items:center; flex-direction:column; margin-right:2vw;}
-    .imageContainer img {width:100%;  }
+    .imageCharacterChoiceContainer {display:flex; width:30%; align-items:center; flex-direction:column; margin-right:2vw;}
+    .imageCharacterChoiceContainer img {width:100%;  }
 
-    .descriptionContainer {width:30%;  border:1px solid #757575;border-radius:0.5em;  padding: 2em}
+    .descriptionCharacterChoiceContainer {width:30%;  border:1px solid #757575;border-radius:0.5em;  padding: 2em}
     .adminOption {display:flex;}
     .adminOption a { margin-right:1%;}
 
@@ -42,41 +42,40 @@
 <div class="header"> 
     <a href="{{ path("app_character_cp") }}"><button>Retour</button></a>
 
-    <h1>SSBU Pool<h1>
+    <h1>SSBU Pool</h1>
+    <div class="placeholder"></div>
 </div>
 
-<div class="fighterContainer">
-    <div class="imageContainer">
-        <img src="/fighters/{{ fighter.getImagePath() }}"></img>
-        <h1>N°{{ fighter.getIterationNumber() }}</h1>
+<div class="characterChoiceContainer">
+    <div class="imageCharacterChoiceContainer">
+        <img src="/fighters/{{ characterCp.0.getCharacterChoice.getImagePath() }}"></img>
+        <h1>N°{{  characterCp.0.getCharacterChoice.getIterationNumber() }}</h1>
     </div>
-    <div class="descriptionContainer">
-        <h1>Name : {{ fighter.getName() }}</h1>
-        <h3 id="serie">Serie : {{ fighter.getSerie().getName() }}<img src="/serie/{{fighter.getSerie().getImagePath()}}"></img></h3>
+    <div class="descriptionCharacterChoiceContainer">
+        <h1>Name : {{ characterCp.0.getCharacterChoice.getName() }}</h1>
+        <h3 id="serie">Serie : {{ characterCp.0.getCharacterChoice.getSerie().getName() }}<img src="/serie/{{ characterCp.0.getCharacterChoice.getSerie().getImagePath()}}"/></h3>
         
-        <h3>Weight : {{ fighter.getWeight() }}</h3>
-        <h3>Speed : {{ fighter.getSpeed() }}</h3>
-        <h3>Tier : {{ fighter.getTier() }}</h3>
+        <h3>Weight : {{ characterCp.0.getCharacterChoice.getWeight() }}</h3>
+        <h3>Speed : {{ characterCp.0.getCharacterChoice.getSpeed() }}</h3>
+        <h3>Tier : {{ characterCp.0.getCharacterChoice.getTier() }}</h3>
 
         {% if is_granted("ROLE_SUPER_ADMIN") %}
         <div class="adminOption">
-            <a href="{{ path("app_update_character", {slug: fighter.getIterationNumber()}) }}"><button>Edit</button></a>
-            <form method="post" action="{{ path("app_character_detail_delete", {slug: fighter.getIterationNumber()}) }}" onsubmit="return confirm('Are you sure ?')">
+            <a href="{{ path("app_update_character", {slug: characterCp.0.getCharacterChoice.getIterationNumber()}) }}"><button>Edit</button></a>
+            <form method="post" action="{{ path("app_character_detail_delete", {slug: characterCp.0.getCharacterChoice.getIterationNumber()}) }}" onsubmit="return confirm('Are you sure ?')">
                 <input type="hidden" name="_method" value='DELETE'>
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ fighter.id) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ characterCp.0.getCharacterChoice.id) }}">
                 <button type="submit">Delete</button>
             </form>
         </div>
         {% endif %}
         <div class="formNoteContainer">
             <h1>Create a note</h1>
-            <form action="{{ path('app_create_note', {slug: fighter.getIterationNumber()}) }}" method="post" name="create_note">
-                <h2>Title</h2>
-                <input type="text" name="_title"></input>
-                <h2>Content</h2>
-                <textArea name="_content"></textArea>
+            {{ form_start(form) }}
+                {{ form_row(form.title) }}
+                {{ form_row(form.content) }}
                 <button type="submit">Add note</button>
-            </form>
+            {{ form_end(form) }}
         </div>
     </div>
     <div class="noteContainer">
@@ -92,7 +91,7 @@
                     </a>
                     {% endif %}
 
-                    <form method="post" action="{{ path("app_character_detail_delete", {slug: fighter.getIterationNumber(), id: note.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
+                    <form method="post" action="{{ path("app_character_detail_delete", {slug: characterCp.0.getCharacterChoice.getIterationNumber(), id: note.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
                         <input type="hidden" name="_method" value='DELETE'>
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ note.id) }}">
                         <button type="submit">Delete</button>

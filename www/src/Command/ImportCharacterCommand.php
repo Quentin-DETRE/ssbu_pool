@@ -19,21 +19,20 @@ class ImportCharacterCommand extends Command
 {
     protected function configure(): void
     {
-        
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-       
+
         $url = 'https://www.ssbwiki.com/Fighter_number';
 
         $crawler = new Crawler(file_get_contents($url));
 
         $result = $crawler->filter('.wikitable > tbody > tr > td > a')->previousAll()->each(function (Crawler $node, $i) {
-    
+
             // $img =  $node->filter('img')->attr('src');
-          
+
             // $tmp = explode("/", $img);
             // $imgName = $tmp[count($tmp)-1];
 
@@ -52,8 +51,6 @@ class ImportCharacterCommand extends Command
                 'image' => ""
             ];
             return $node->text();
-
-    
         });
 
         dump($result);

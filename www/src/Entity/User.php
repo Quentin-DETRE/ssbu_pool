@@ -9,9 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -30,23 +30,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotNull()]
     private ?string $password = null;
 
     #[ORM\Column(length: 25)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 25)]
     private ?string $username = null;
 
     #[ORM\Column(length: 25)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 25)]
     private ?string $name = null;
 
     #[ORM\Column(length: 25)]
+    #[Assert\NotNull()]
+    #[Assert\Length(max: 25)]
     private ?string $surname = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: CharacterCp::class)]
-    private Collection $characterCp;
+    private Collection $characterCps;
 
     public function __construct()
     {
-        $this->characterCp = new ArrayCollection();
+        $this->characterCps = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -158,15 +165,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, CharacterCp>
      */
-    public function getCharacterCp(): Collection
+    public function getCharacterCps(): Collection
     {
-        return $this->characterCp;
+        return $this->characterCps;
     }
 
     public function addCharacterCp(CharacterCp $characterCp): self
     {
-        if (!$this->characterCp->contains($characterCp)) {
-            $this->characterCp->add($characterCp);
+        if (!$this->characterCps->contains($characterCp)) {
+            $this->characterCps->add($characterCp);
             $characterCp->setUser($this);
         }
 
@@ -175,7 +182,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeCharacterCp(CharacterCp $characterCp): self
     {
-        if ($this->characterCp->removeElement($characterCp)) {
+        if ($this->characterCps->removeElement($characterCp)) {
             // set the owning side to null (unless already changed)
             if ($characterCp->getUser() === $this) {
                 $characterCp->setUser(null);
@@ -184,5 +191,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 }

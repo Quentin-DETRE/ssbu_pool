@@ -12,8 +12,7 @@ class CharacterCpFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->getCharacterCp() as $championPool )
-        {
+        foreach ($this->getCharacterCp() as $championPool) {
             foreach ($championPool['championName'] as $champion) {
                 $pool = new CharacterCp();
                 $user = $this->getReference($championPool['userEmail']);
@@ -21,11 +20,10 @@ class CharacterCpFixtures extends Fixture implements DependentFixtureInterface
                 $pool->setUser($user);
                 $pool->setCharacterChoice($character);
 
-                $this->addReference($user->getId()." ".$character->getId(), $pool);
+                $this->addReference($user->getId() . " " . $character->getId(), $pool);
 
                 $manager->persist($pool);
             }
-
         }
 
         $manager->flush();
@@ -34,10 +32,10 @@ class CharacterCpFixtures extends Fixture implements DependentFixtureInterface
     {
         return [UserFixtures::class, CharacterChoiceFixtures::class];
     }
-    private function getCharacterCp() 
+    private function getCharacterCp()
     {
         return [0 => [
-            'userEmail'=> "q-detre@sfi.fr", 
+            'userEmail' => "q-detre@sfi.fr",
             'championName' => [
                 0 => '65',
                 1 => '72',

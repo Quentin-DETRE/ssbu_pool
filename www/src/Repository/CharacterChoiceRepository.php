@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CharacterChoice;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,28 +40,56 @@ class CharacterChoiceRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return CharacterChoice[] Returns an array of CharacterChoice objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getAllCharacterChoices():array
+    {
+        return $this->createQueryBuilder('cc')->addSelect('s')
+            ->leftJoin('cc.serie', 's')
+            ->getQuery()->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?CharacterChoice
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findOneCharacterChoiceAndCharacterCp(User $user, string $in): array
+    {
+        return $this->createQueryBuilder('cc')->addSelect('cp')
+            ->leftJoin('cc.characterCps', 'cp')
+            ->where('cp.user = :user')
+            ->andWhere('cc.iterationNumber = :in')
+            ->setParameters(['user'=> $user, 'in'=>$in])
+            ->getQuery()->getResult();
+
+    }
+
+    public function findOneCharacterChoice(string $in): array
+    {
+        return $this->createQueryBuilder('cc')->addSelect('cp')
+            ->leftJoin('cc.characterCps', 'cp')
+            ->where('cc.iterationNumber = :in')
+            ->setParameter('in', $in)
+            ->getQuery()->getResult();
+
+    }
+
+    //    /**
+    //     * @return CharacterChoice[] Returns an array of CharacterChoice objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('c.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?CharacterChoice
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

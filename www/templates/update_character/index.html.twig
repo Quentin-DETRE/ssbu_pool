@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Update {{ fighter.name }}{% endblock %}
+{% block title %}Update {{ characterChoice.name }}{% endblock %}
 
 {% block body %}
 <style>
@@ -30,9 +30,9 @@
 
 
 <div class="header"> 
-    <a href="{{ path('app_character_detail', {slug: fighter.getIterationNumber()}) }}"><button>Retour</button></a>
-    <h1>SSBU Pool<h1>
-
+    <a href="{{ path('app_character_detail', {slug: characterChoice.getIterationNumber()}) }}"><button>Retour</button></a>
+    <h1>SSBU Pool</h1>
+    <div class="placeholder"></div>
 </div>
 <div class="example-wrapper">
     {{ form_start(form) }}

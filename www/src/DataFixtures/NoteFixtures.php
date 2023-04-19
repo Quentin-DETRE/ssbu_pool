@@ -15,9 +15,9 @@ class NoteFixtures extends Fixture implements DependentFixtureInterface
     {
 
 
-        foreach($this->getNotes() as $Notes) {
+        foreach ($this->getNotes() as $Notes) {
             $note = new Note;
-            $cp = $this->getReference($Notes['userId']." ".$Notes['cpId'], CharacterCp::class);
+            $cp = $this->getReference($Notes['userId'] . " " . $Notes['cpId'], CharacterCp::class);
             $note->setCharacterCp($cp);
             $note->setTitle($Notes['title']);
             $note->setContent($Notes['content']);
@@ -33,8 +33,8 @@ class NoteFixtures extends Fixture implements DependentFixtureInterface
         return [CharacterCpFixtures::class];
     }
 
-    private function getNotes() {
-        return [
-        ];
+    private function getNotes()
+    {
+        return [];
     }
 }

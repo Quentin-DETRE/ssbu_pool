@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+
 use App\Entity\User;
 use App\Entity\CharacterChoice;
 use App\Repository\CharacterCpRepository;
@@ -16,20 +17,20 @@ class CharacterCp
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'characterCp')]
+    #[ORM\ManyToOne(targetEntity: CharacterChoice::class, inversedBy: 'characterCps')]
     #[ORM\JoinColumn(nullable: false)]
     private ?characterChoice $characterChoice = null;
 
-    #[ORM\ManyToOne(inversedBy: 'characterCp')]
+    #[ORM\ManyToOne(inversedBy: 'characterCps')]
     #[ORM\JoinColumn(nullable: false)]
     private ?user $user = null;
 
     #[ORM\OneToMany(mappedBy: 'characterCp', targetEntity: Note::class)]
-    private Collection $note;
+    private Collection $notes;
 
     public function __construct()
     {
-        $this->note = new ArrayCollection();
+        $this->notes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -64,15 +65,15 @@ class CharacterCp
     /**
      * @return Collection<int, Note>
      */
-    public function getNote(): Collection
+    public function getNotes(): Collection
     {
-        return $this->note;
+        return $this->notes;
     }
 
     public function addNote(Note $note): self
     {
-        if (!$this->note->contains($note)) {
-            $this->note->add($note);
+        if (!$this->notes->contains($note)) {
+            $this->notes->add($note);
             $note->setCharacterCp($this);
         }
 
@@ -81,7 +82,7 @@ class CharacterCp
 
     public function removeNote(Note $note): self
     {
-        if ($this->note->removeElement($note)) {
+        if ($this->notes->removeElement($note)) {
             // set the owning side to null (unless already changed)
             if ($note->getCharacterCp() === $this) {
                 $note->setCharacterCp(null);

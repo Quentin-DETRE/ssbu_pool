@@ -20,7 +20,7 @@ class NoteVoter extends Voter
         if (!$subject instanceof Note) {
             return false;
         }
-        return in_array($attribute, [self::EDIT,self::DELETE, self::VIEW])
+        return in_array($attribute, [self::EDIT, self::DELETE, self::VIEW])
             && $subject instanceof \App\Entity\Note;
     }
 
@@ -36,22 +36,22 @@ class NoteVoter extends Voter
         switch ($attribute) {
             case self::EDIT:
                 // logic to determine if the user can EDIT
-                if($user == $subject->getCharacterCp()->getUser()) {
+                if ($user == $subject->getCharacterCp()->getUser()) {
                     return true;
                 }
                 return false;
                 // return true or false
                 break;
-            
+
             case self::DELETE:
-                if($user == $subject->getCharacterCp()->getUser() || $user->getRoles() != [] ) {
+                if ($user == $subject->getCharacterCp()->getUser() || $user->getRoles() != []) {
                     return true;
                 }
                 return false;
                 break;
-            
+
             case self::VIEW:
-                if($user = $subject->getCharacterCp()->getUser()){
+                if ($user == $subject->getCharacterCp()->getUser()) {
                     return true;
                 }
                 return false;
