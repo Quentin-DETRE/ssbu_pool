@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\CharacterChoice;
 use App\Form\CharacterType;
+use App\Repository\CharacterChoiceRepository;
 use App\Services\CharacterChoiceManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +18,17 @@ use Imagine\Image\Box;
 
 class CreateCharacterController extends AbstractController
 {
-    #[Route('/character/create', name: 'app_create_character')]
+    #[Route('/character/create', name: 'app_create_character', methods: 'GET')]
     public function index(Request $request, EntityManagerInterface $entityManager, CharacterChoiceManager $characterChoiceManager, SluggerInterface $slugger): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
+        return $this->render('create_character/index.html.twig', [
+            'form' => $this->createForm(CharacterType::class, new CharacterChoice())->createView(),
+        ]);
+    }
+
+    #[Route('/character/create', name: 'app_process_create_character', methods:'POST')]
+    public function createCharacterChoice(Request $request, EntityManagerInterface $entityManager, CharacterChoiceManager $characterChoiceManager, SluggerInterface $slugger): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
         $characterChoice = new CharacterChoice();
@@ -27,11 +37,7 @@ class CreateCharacterController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($characterChoiceManager->createCharacter($form, $slugger));
             $entityManager->flush();
-            return $this->redirectToRoute('app_character_choice');
         }
-
-        return $this->render('create_character/index.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->redirectToRoute('app_character_choice');
     }
 }

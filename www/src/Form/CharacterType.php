@@ -21,6 +21,7 @@ class CharacterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->setMethod('POST')
             ->add('name', TextType::class)
             ->add('weight', TextType::class)
             ->add('speed', TextType::class)
