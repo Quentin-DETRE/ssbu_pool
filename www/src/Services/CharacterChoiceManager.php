@@ -11,12 +11,21 @@ use Imagine\Image\Box;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CharacterChoiceManager
 {
-    public function  createCharacter(FormInterface $form, SluggerInterface $slugger):CharacterChoice
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
+    }
+
+    public function  createCharacter(FormInterface $form, SluggerInterface $slugger, Request $request):CharacterChoice
+    {
+
         $characterChoice = $form->getData();
         $image = $form->get('imagePath')->getData();
 
@@ -55,9 +64,15 @@ class CharacterChoiceManager
         } else {
             $characterChoice->setImagePath('Mario_SSBU.png');
         }
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($characterChoice);
+            $this->entityManager->flush();
+        }
         return $characterChoice;
     }
-    public function updateCharacter(FormInterface $form, SluggerInterface $slugger): CharacterChoice
+    public function updateCharacter(formInterface $form, SluggerInterface $slugger, Request $request): CharacterChoice
     {
         $characterChoice = $form->getData();
         $image = $form->get('imagePath')->getData();
@@ -95,6 +110,11 @@ class CharacterChoiceManager
             $photo->resize(new Box($width, $height))->save($reduceFile);
         }
 
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($characterChoice);
+            $this->entityManager->flush();
+        }
         return $characterChoice;
     }
     public function deleteCharacter( EntityManagerInterface $entityManager, array $characterCps, CharacterChoice $characterChoice, NoteRepository $noteRepository ):void

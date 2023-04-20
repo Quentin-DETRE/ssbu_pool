@@ -6,6 +6,7 @@ use App\Entity\CharacterChoice;
 use App\Entity\Note;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Utils;
 
 /**
  * @extends ServiceEntityRepository<Note>
@@ -49,6 +50,7 @@ class NoteRepository extends ServiceEntityRepository
             ->setParameter('iterationNumber', $iterationNumber)
             ->getQuery()->getResult();
     }
+
 
 
     //    /**

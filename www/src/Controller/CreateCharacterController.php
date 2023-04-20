@@ -31,13 +31,7 @@ class CreateCharacterController extends AbstractController
     public function createCharacterChoice(Request $request, EntityManagerInterface $entityManager, CharacterChoiceManager $characterChoiceManager, SluggerInterface $slugger): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
-        $characterChoice = new CharacterChoice();
-        $form = $this->createForm(CharacterType::class, $characterChoice);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($characterChoiceManager->createCharacter($form, $slugger));
-            $entityManager->flush();
-        }
+        $characterChoiceManager->createCharacter($this->createForm(CharacterType::class, new CharacterChoice()), $slugger,$request);
         return $this->redirectToRoute('app_character_choice');
     }
 }

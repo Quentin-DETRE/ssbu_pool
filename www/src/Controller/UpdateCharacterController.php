@@ -19,30 +19,21 @@ use Imagine\Image\Box;
 class UpdateCharacterController extends AbstractController
 {
     #[Route('/character/update/{slug}', name: 'app_update_character', methods: 'GET')]
-    public function index(EntityManagerInterface $entityManager, CharacterChoiceRepository $characterChoiceRepository, CharacterChoiceManager $characterChoiceManager, Request $request, string $slug, SluggerInterface $slugger): Response
+    public function index(CharacterChoiceRepository $characterChoiceRepository, string $slug): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
         $characterChoice = $characterChoiceRepository->findOneBy(['iterationNumber' => $slug]);
-        $form = $this->createForm(CharacterType::class, $characterChoice);
-
-
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
         return $this->render('update_character/index.html.twig', [
-            'form' => $form->createView(),
+            'form' =>  $this->createForm(CharacterType::class, $characterChoice)->createView(),
             'characterChoice' => $characterChoice,
         ]);
     }
 
     #[Route('/character/update/{slug}', name: 'app_process_update_character', methods: 'POST')]
-    public function updateCharacterController(EntityManagerInterface $entityManager, CharacterChoiceRepository $characterChoiceRepository, CharacterChoiceManager $characterChoiceManager, Request $request, string $slug, SluggerInterface $slugger): Response
+    public function updateCharacterController(CharacterChoiceRepository $characterChoiceRepository, CharacterChoiceManager $characterChoiceManager, Request $request, string $slug, SluggerInterface $slugger): Response
     {
         $characterChoice = $characterChoiceRepository->findOneBy(['iterationNumber' => $slug]);
-        $form = $this->createForm(CharacterType::class, $characterChoice);
-
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($characterChoiceManager->updateCharacter($form, $slugger));
-            $entityManager->flush();
-        }
+        $characterChoiceManager->updateCharacter($this->createForm(CharacterType::class, $characterChoice), $slugger, $request);
         return $this->redirectToRoute('app_character_detail', ['slug' => $characterChoice->getIterationNumber()]);
     }
 }

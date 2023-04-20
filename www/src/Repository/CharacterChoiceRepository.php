@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CharacterChoice;
+use App\Entity\Note;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -66,6 +67,16 @@ class CharacterChoiceRepository extends ServiceEntityRepository
             ->setParameter('in', $in)
             ->getQuery()->getResult();
 
+    }
+
+    public function findCharacterByIdNote(int $idNote): array
+    {
+        return $this->createQueryBuilder('cc')
+            ->leftJoin('cc.characterCps', 'cp')
+            ->leftJoin('cp.notes', 'n')
+            ->where('n.id = :idNote')
+            ->setParameter('idNote', $idNote)
+            ->getQuery()->getResult();
     }
 
     //    /**

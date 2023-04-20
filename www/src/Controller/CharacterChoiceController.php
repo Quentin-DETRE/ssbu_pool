@@ -24,14 +24,15 @@ class CharacterChoiceController extends AbstractController
     }
 
     #[Route('/character/add/{id}', name: 'app_create_character_cp', methods: 'POST')]
-    public function createCharacterCp(CharacterChoice $characterChoice, CharacterCpManager $characterCpManager, CharacterCpRepository $characterCp, UserInterface $user, EntityManagerInterface $entityManager): Response
+    public function createCharacterCp(CharacterChoice $characterChoice, CharacterCpManager $characterCpManager, UserInterface $user, EntityManagerInterface $entityManager): Response
     {
-        if (!$characterCp->findBy(['user' => $user, 'characterChoice' => $characterChoice]))
-        {
-            $entityManager->persist($characterCpManager->addCharacterToUser($user, $characterChoice));
-            $entityManager->flush();
+        $characterCp = $characterCpManager->addCharacterToUser($user, $characterChoice);
+        if ($characterCp){
+            $this->addFlash('success', sprintf('Le personnage %s à bien été ajouté', $characterCp->getCharacterChoice()->getName()));
         }
-
+        else {
+            $this->addFlash('success', 'You already have this character in your pool');
+        }
         return $this->redirectToRoute('app_character_cp');
     }
 }
