@@ -6,6 +6,8 @@ use App\Entity\CharacterCp;
 use App\Entity\Note;
 
 use App\Entity\User;
+use App\Repository\CharacterCpRepository;
+use App\Repository\NoteRepository;
 use Doctrine\DBAL\Driver\Mysqli\Initializer\Charset;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,10 +30,10 @@ class CharacterCpController extends AbstractController
 
 
     #[Route('/pool', name: 'app_cp_drop', methods: 'DELETE')]
-    public function dropCp(UserInterface $user, EntityManagerInterface $entityManager, Request $request): Response
+    public function dropCp(EntityManagerInterface $entityManager, Request $request, CharacterCpRepository $characterCpRepository, NoteRepository $noteRepository): Response
     {
-        $characterCp = $entityManager->getRepository(CharacterCp::class)->findOneBy(['id' => $request->query->get('id')]);
-        $notes = $entityManager->getRepository(Note::class)->findBy(['characterCp' => $characterCp]);
+        $characterCp = $characterCpRepository->findOneBy(['id' => $request->query->get('id')]);
+        $notes = $noteRepository->findBy(['characterCp' => $characterCp]);
         if ($this->isCsrfTokenValid('delete' . $characterCp->getId(), $request->get('_token'))) {
             if ($notes) {
                 foreach ($notes as $note) {

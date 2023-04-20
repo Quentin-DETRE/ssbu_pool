@@ -6,6 +6,10 @@ use App\Entity\CharacterChoice;
 use App\Entity\CharacterCp;
 use App\Entity\Note;
 use App\Form\NoteType;
+use App\Repository\CharacterChoiceRepository;
+use App\Repository\CharacterCpRepository;
+use App\Repository\NoteRepository;
+use App\Services\CharacterChoiceManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,11 +21,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class CharacterDetailController extends AbstractController
 {
     #[Route('/character/number/{slug}', name: 'app_character_detail', methods: 'GET')]
-    public function index(EntityManagerInterface $entityManager, string $slug, Request $request, UserInterface $user): Response
+    public function index(string $slug, UserInterface $user, CharacterCpRepository $characterCpRepository, NoteRepository $noteRepository): Response
     {
-        $characterCp = $entityManager->getRepository(CharacterCp::class)->findCharacterDetail($slug, $user);
+        $characterCp = $characterCpRepository->findCharacterDetail($slug, $user);
 
-        $notes = $entityManager->getRepository(Note::class)->findByInterationNumber($slug);
+        $notes = $noteRepository->findByInterationNumber($slug);
 
         $note = new Note();
         $form = $this->createForm(NoteType::class, $note);
@@ -37,10 +41,10 @@ class CharacterDetailController extends AbstractController
     }
 
     #[Route('/character/number/{slug}', name: 'app_create_note', methods: 'POST')]
-    public function createNote(Request $request, EntityManagerInterface $entityManager, string $slug, UserInterface $user): Response
+    public function createNote(Request $request, EntityManagerInterface $entityManager, string $slug, UserInterface $user, CharacterChoiceRepository $characterChoiceRepository, CharacterCpRepository $characterCpRepository): Response
     {
-        $characterChoice = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['iterationNumber' => $slug]);
-        $cp = $entityManager->getRepository(CharacterCp::class)->findOneBy(['user' => $user, 'characterChoice' => $characterChoice]);
+        $characterChoice = $characterChoiceRepository->findOneBy(['iterationNumber' => $slug]);
+        $characterCp = $characterCpRepository->findOneBy(['user' => $user, 'characterChoice' => $characterChoice]);
 
         $note = new Note();
         $form = $this->createForm(NoteType::class, $note);
@@ -48,7 +52,7 @@ class CharacterDetailController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $note = $form->getData();
-            $note->setCharacterCp($cp);
+            $note->setCharacterCp($characterCp);
             $entityManager->persist($note);
             $entityManager->flush();
         }
@@ -58,39 +62,23 @@ class CharacterDetailController extends AbstractController
     }
 
     #[Route('/character/number/{slug}', name: 'app_character_detail_delete', methods: "DELETE")]
-    public function delete(EntityManagerInterface $entityManager, string $slug, Request $request): Response
+    public function delete(EntityManagerInterface $entityManager, CharacterChoiceManager $characterDetailManager, string $slug, Request $request, NoteRepository $noteRepository, CharacterChoiceRepository $characterChoiceRepository, CharacterCpRepository $characterCpRepository): Response
     {
-        $characterChoice = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['iterationNumber' => $slug]);
-        $cps = $entityManager->getRepository(CharacterCp::class)->findBy(['characterChoice' => $characterChoice]);
-
-        $note = $entityManager->getRepository(Note::class)->findOneBy(['id' => $request->query->get('id')]);
-
+        $characterChoice = $characterChoiceRepository->findOneBy(['iterationNumber' => $slug]);
+        $characterCps = $characterCpRepository->findBy(['characterChoice' => $characterChoice]);
         if ($this->isCsrfTokenValid('delete' . $characterChoice->getId(), $request->get('_token'))) {
             $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
-
-            foreach ($cps as $cp) {
-                $notes = $entityManager->getRepository(Note::class)->findBy(['characterCp' => $cp]);
-                foreach ($notes as $note) {
-                    $entityManager->remove($note);
-                }
-                $entityManager->remove($cp);
-            }
-
-            $entityManager->remove($characterChoice);
-            $entityManager->flush();
+            $characterDetailManager->deleteCharacter($entityManager, $characterCps, $characterChoice, $noteRepository);
         }
-
+        $note = $noteRepository->findOneBy(['id' => $request->query->get('id')]);
         if ($note != null) {
             $this->denyAccessUnlessGranted('NOTE_DELETE', $note);
             if ($this->isCsrfTokenValid('delete' . $note->getId(), $request->get('_token'))) {
-
                 $entityManager->remove($note);
                 $entityManager->flush();
-
                 return $this->redirectToRoute('app_character_detail', ['slug' => $slug]);
             }
         }
-
         return $this->redirectToRoute('app_character_cp');
     }
 }
