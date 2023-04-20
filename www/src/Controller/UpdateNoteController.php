@@ -6,6 +6,9 @@ use App\Entity\Note;
 use App\Entity\CharacterCp;
 use App\Entity\CharacterChoice;
 use App\Form\NoteType;
+use App\Repository\CharacterChoiceRepository;
+use App\Repository\CharacterCpRepository;
+use App\Repository\NoteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,13 +18,13 @@ use Symfony\Component\HttpFoundation\Request;
 class UpdateNoteController extends AbstractController
 {
     #[Route('/update/note/{id}', name: 'app_update_note')]
-    public function index(EntityManagerInterface $entityManager, int $id, Request $request): Response
+    public function index(EntityManagerInterface $entityManager, int $id, Request $request, NoteRepository $noteRepository, CharacterCpRepository $characterCpRepository, CharacterChoiceRepository $characterChoiceRepository): Response
     {
 
-        $note = $entityManager->getRepository(Note::class)->findOneBy(['id' => $id]);
+        $note = $noteRepository->findOneBy(['id' => $id]);
         $this->denyAccessUnlessGranted('NOTE_EDIT', $note);
-        $characterCp = $entityManager->getRepository(CharacterCp::class)->findOneBy(['id' => $note->getCharacterCp()->getId()]);
-        $CharacterChoice = $entityManager->getRepository(CharacterChoice::class)->findOneBy(['id' => $characterCp->getCharacterChoice()->getId()]);
+        $characterCp = $characterCpRepository->findOneBy(['id' => $note->getCharacterCp()->getId()]);
+        $CharacterChoice = $characterChoiceRepository->findOneBy(['id' => $characterCp->getCharacterChoice()->getId()]);
 
         $form = $this->createForm(NoteType::class, $note);
 
