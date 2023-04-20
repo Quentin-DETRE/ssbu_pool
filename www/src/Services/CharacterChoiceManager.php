@@ -57,6 +57,46 @@ class CharacterChoiceManager
         }
         return $characterChoice;
     }
+    public function updateCharacter(FormInterface $form, SluggerInterface $slugger): CharacterChoice
+    {
+        $characterChoice = $form->getData();
+        $image = $form->get('imagePath')->getData();
+
+        if ($image) {
+            $originalImageName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+
+            $safeImageName = $slugger->slug($originalImageName);
+            $newImageName = $safeImageName . '_SSBU.' . $image->guessExtension();
+
+            try {
+                $image->move(
+                    $this->getParameter('fighters_directory'),
+                    $newImageName
+                );
+            } catch (FileException $e) {
+                dd("CPT");
+            }
+
+            $characterChoice->setImagePath($newImageName);
+
+            $imagine = new Imagine();
+            $fullFile = "fighters/" . $newImageName;
+            $reduceFile = "fighters/250_" . $newImageName;
+            list($iwidth, $iheight) = getimagesize($fullFile);
+            $ratio = $iwidth / $iheight;
+            $width = 200;
+            $height = 150;
+            if ($width / $height > $ratio) {
+                $width = $height * $ratio;
+            } else {
+                $height = $width / $ratio;
+            }
+            $photo = $imagine->open($fullFile);
+            $photo->resize(new Box($width, $height))->save($reduceFile);
+        }
+
+        return $characterChoice;
+    }
     public function deleteCharacter( EntityManagerInterface $entityManager, array $characterCps, CharacterChoice $characterChoice, NoteRepository $noteRepository ):void
     {
         $filesystem = new Filesystem();
