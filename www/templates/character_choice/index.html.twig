@@ -41,7 +41,11 @@
 </div>
 <div class="example-wrapper">
     <h1>Chose your fighter</h1>
-
+    {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.serie) }}
+        <input type="submit" value="Send">
+    {{ form_end(form) }}
     <div id="gridCharacterChoice">
     {% for characterChoice in characterChoices %}
         <form class="fighterCard" action="{{ path('app_create_character_cp', {id: characterChoice.getId()}) }}" method="POST">

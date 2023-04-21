@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Entity\CharacterChoice;
 use App\Entity\CharacterCp;
+use App\Entity\Serie;
 use App\Repository\NoteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -135,5 +137,18 @@ class CharacterChoiceManager
         }
         $entityManager->remove($characterChoice);
         $entityManager->flush();
+    }
+
+    public function handleSearch(Form $form, Request $request):array
+    {
+        $filters = ['name' => '', 'serie' => new Serie()];
+        $filters['serie']->setName("");
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $filters = $form->getData();
+        }
+
+        return $filters;
     }
 }

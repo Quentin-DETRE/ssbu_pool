@@ -47,6 +47,15 @@ class CharacterChoiceRepository extends ServiceEntityRepository
             ->leftJoin('cc.serie', 's')
             ->getQuery()->getResult();
     }
+    public  function getCharacterChoicesByParams(array $params):array
+    {
+        return $this->createQueryBuilder('cc')->addSelect('s')
+            ->leftJoin('cc.serie', 's')
+            ->where('cc.name LIKE :name')
+            ->andWhere('s.name LIKE :serie')
+            ->setParameters(['name'=> '%'.$params['name'].'%', 'serie' => '%'.$params['serie']->getName().'%'])
+            ->getQuery()->getResult();
+    }
 
     public function findOneCharacterChoiceAndCharacterCp(User $user, string $in): array
     {
