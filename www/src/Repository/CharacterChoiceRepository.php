@@ -41,19 +41,38 @@ class CharacterChoiceRepository extends ServiceEntityRepository
         }
     }
 
-    public function getAllCharacterChoices():array
+    public function getAllCharacterChoices(): array
     {
         return $this->createQueryBuilder('cc')->addSelect('s')
             ->leftJoin('cc.serie', 's')
             ->getQuery()->getResult();
     }
-    public  function getCharacterChoicesByParams(array $params):array
+
+    public function getCharacterChoicesByParams(array $params): array
     {
+        if ($params['serie'] == null && $params['name'] == null) {
+            return $this->createQueryBuilder('cc')->addSelect('s')
+                ->leftJoin('cc.serie', 's')
+                ->getQuery()->getResult();
+        } else if ($params['serie'] != null && $params['name'] == null) {
+            return $this->createQueryBuilder('cc')->addSelect('s')
+                ->leftJoin('cc.serie', 's')
+                ->Where('s.name LIKE :serie')
+                ->setParameter('serie', '%' . $params['serie']->getName() . '%')
+                ->getQuery()->getResult();
+        } else if ($params['serie'] == null && $params['name'] != null) {
+            return $this->createQueryBuilder('cc')->addSelect('s')
+                ->leftJoin('cc.serie', 's')
+                ->where('cc.name LIKE :name')
+                ->setParameter('name', '%' . $params['name'] . '%')
+                ->getQuery()->getResult();
+        }
+
         return $this->createQueryBuilder('cc')->addSelect('s')
             ->leftJoin('cc.serie', 's')
             ->where('cc.name LIKE :name')
             ->andWhere('s.name LIKE :serie')
-            ->setParameters(['name'=> '%'.$params['name'].'%', 'serie' => '%'.$params['serie']->getName().'%'])
+            ->setParameters(['name' => '%' . $params['name'] . '%', 'serie' => '%' . $params['serie']->getName() . '%'])
             ->getQuery()->getResult();
     }
 
@@ -63,7 +82,7 @@ class CharacterChoiceRepository extends ServiceEntityRepository
             ->leftJoin('cc.characterCps', 'cp')
             ->where('cp.user = :user')
             ->andWhere('cc.iterationNumber = :in')
-            ->setParameters(['user'=> $user, 'in'=>$in])
+            ->setParameters(['user' => $user, 'in' => $in])
             ->getQuery()->getResult();
 
     }

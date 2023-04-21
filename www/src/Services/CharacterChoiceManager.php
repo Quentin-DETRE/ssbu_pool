@@ -141,9 +141,7 @@ class CharacterChoiceManager
 
     public function handleSearch(Form $form, Request $request):array
     {
-        $filters = ['name' => '', 'serie' => new Serie()];
-        $filters['serie']->setName("");
-
+        $filters = ['name' => null, 'serie' => null];
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()) {
             $filters = $form->getData();

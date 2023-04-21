@@ -19,6 +19,7 @@ class SearchbarType extends AbstractType
             ->setMethod('GET')
             ->add('name', SearchType::class, ['label' => 'Search', 'required' => false])
             ->add('serie', EntityType::class, [
+                'required'=> false,
                 'class' => Serie::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('s')
