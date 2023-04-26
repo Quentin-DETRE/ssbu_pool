@@ -4,60 +4,60 @@ namespace App\Controller;
 
 
 use App\Entity\Note;
-use App\Form\NoteType;
-use App\Repository\CharacterChoiceRepository;
-use App\Repository\CharacterCpRepository;
-use App\Repository\NoteRepository;
-use App\Services\CharacterChoiceManager;
-use App\Services\NoteManager;
+use App\Entity\User;
+use App\Services\CharacterChoice\CharacterChoiceManager;
+use App\Services\CharacterChoice\CharacterChoiceProvider;
+use App\Services\CharacterCp\CharacterCpProvider;
+use App\Services\Note\NoteFormBuilder;
+use App\Services\Note\NoteFormHandler;
+use App\Services\Note\NoteManager;
+use App\Services\Note\NoteProvider;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class CharacterDetailController extends AbstractController
 {
-    #[Route('/character/number/{slug}', name: 'app_character_detail', methods: 'GET')]
-    public function index(string $slug, UserInterface $user, CharacterCpRepository $characterCpRepository, NoteRepository $noteRepository): Response
+    #[Route('/character/number/{iterationNumber}', name: 'app_character_detail', methods: ['GET', 'POST'])]
+    public function index(string $iterationNumber, NoteFormHandler $noteFormHandler, Request $request, NoteManager $noteManager, UserInterface $user, CharacterCpProvider $characterCpProvider, NoteFormBuilder $noteFormBuilder, NoteProvider $noteProvider): Response
     {
-        $characterCp =$characterCpRepository->findCharacterDetail($slug, $user);
+        $characterCp = $characterCpProvider->findCharacterCpByIterationNumberAndUser($iterationNumber, $user);
         if (!$characterCp) {
             return $this->redirectToRoute("app_character_cp");
         }
+        $noteCreateForm = $noteFormBuilder->getForm();
+        $note = $noteFormHandler->handleCreateForm($noteCreateForm, $request, $characterCp);
+        if ($note) {
+            $noteManager->createOrUpdateNote($note);
+            $this->addFlash("success", "The note was successfully created !");
+        }
+        if ($noteCreateForm->isSubmitted() && !$noteCreateForm->isValid())  {
+            $this->addFlash('error', "The note could not be created");
+        }
         return $this->render('character_detail/index.html.twig', [
-            'characterCp' =>  $characterCp,
-            'notes' => $noteRepository->findByInterationNumber($slug),
-            'form' => $this->createForm(NoteType::class, new Note())->createView(),
+            'character_cp' => $characterCp,
+            'notes' => $noteProvider->findNotesByIterationNumber($iterationNumber),
+            'form' => $noteCreateForm->createView(),
         ]);
     }
 
-    #[Route('/character/number/{slug}', name: 'app_create_note', methods: 'POST')]
-    public function createNote(Request $request,NoteManager $noteManager, string $slug, UserInterface $user): Response
+    #[Route('/character/number/{iterationNumber}', name: 'app_character_detail_delete_character', methods: "DELETE")]
+    public function deleteCharacter(CharacterCpProvider $characterCpProvider, CharacterChoiceProvider $characterChoiceProvider, CharacterChoiceManager $characterDetailManager, string $iterationNumber, Request $request): Response
     {
-
-        $noteManager->createNote($slug, $request, $this->createForm(NoteType::class, new Note()), $user);
-        return $this->redirectToRoute('app_character_detail', ['slug' => $slug]);
+        $characterChoice = $characterChoiceProvider->findCharacterChoiceByIterationNumber($iterationNumber);
+        $characterCps = $characterCpProvider->findByCharacterChoice($characterChoice);
+        $characterDetailManager->deleteCharacter($characterCps, $characterChoice, $request->get('_token'));
+        $this->addFlash("success", "The characterChoice was successfully deleted !");
+        return $this->redirectToRoute('app_character_cp');
     }
 
-    #[Route('/character/number/{slug}', name: 'app_character_detail_delete', methods: "DELETE")]
-    public function delete(EntityManagerInterface $entityManager,NoteManager $noteManager, CharacterChoiceManager $characterDetailManager, string $slug, Request $request, NoteRepository $noteRepository, CharacterChoiceRepository $characterChoiceRepository, CharacterCpRepository $characterCpRepository): Response
+    #[Route('/character/number/{iterationNumber}/delete/note/{id}', name: 'app_character_detail_delete_note', methods: "DELETE")]
+    public function deleteNote(Note $note, NoteManager $noteManager, string $iterationNumber, Request $request): Response
     {
-        $characterChoice = $characterChoiceRepository->findOneBy(['iterationNumber' => $slug]);
-        $characterCps = $characterCpRepository->findBy(['characterChoice' => $characterChoice]);
-        if ($this->isCsrfTokenValid('delete' . $characterChoice->getId(), $request->get('_token'))) {
-            $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
-            $characterDetailManager->deleteCharacter($entityManager, $characterCps, $characterChoice, $noteRepository);
-        }
-
-        $note = $noteRepository->findOneBy(['id' => $request->query->get('id')]);
-        if ($note != null && $this->isCsrfTokenValid('delete' . $note->getId(), $request->get('_token'))) {
-            $this->denyAccessUnlessGranted('NOTE_DELETE', $note);
-            $noteManager->deleteNote($note);
-            return $this->redirectToRoute('app_character_detail', ['slug' => $slug]);
-        }
-
-        return $this->redirectToRoute('app_character_cp');
+        $noteManager->deleteNote($note, $request->get('_token'));
+        $this->addFlash("success", "The note was successfully deleted !");
+        return $this->redirectToRoute('app_character_detail', ['slug' => $iterationNumber]);
     }
 }

@@ -17,15 +17,20 @@
     button {background: none; border: none; display: flex; align-items: center; justify-content: space-between;}
     button:hover {cursor:pointer}
     
-    .example-wrapper { width: 95vw; font: 18px/1.5 sans-serif; display: flex; align-items: center; flex-direction:column; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    .chose-character { width: 95vw; font: 18px/1.5 sans-serif; display: flex; align-items: center; flex-direction:column; }
+    .chose-character code { background: #F5F5F5; padding: 2px 6px; }
 
     .fighterCard { display:flex; background:white; padding:5px; justify-content:space-between; align-items:center; border: 1px solid black; border-radius:0.5em;}
     .imgCharacterChoice { height: auto; width:35%;}
     .imgSerie { height: auto; width:25%; }
     #gridCharacterChoice { display: grid; grid-template-columns: 11vw 11vw 11vw 11vw 11vw 11vw 11vw 11vw; grid-gap: 1vw;}
     
-   
+    form[name="character_choice_search"]{display: flex; align-items: center; }
+    form[name="character_choice_search"] div{padding: 1vw;}
+    form[name="character_choice_search"] div label{margin-right: 0.5vw;}
+    form[name="character_choice_search"] input[type="submit"] {padding:4px; background-color:#990000; color:white; border:none; border-radius:0.5em}
+    form[name="character_choice_search"] input[type="submit"]:hover { background-color:#690000;}
+
     .submit{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
     .submit:hover {cursor:pointer; background-color:#690000;}
 
@@ -39,21 +44,23 @@
     <div class="Placeholder"></div>
 
 </div>
-<div class="example-wrapper">
+<div class="chose-character">
     <h1>Chose your fighter</h1>
-    {{ form_start(form) }}
-        {{ form_row(form.name) }}
-        {{ form_row(form.serie) }}
-        <input type="submit" value="Send">
-    {{ form_end(form) }}
+    <div class="search-form">
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.serie) }}
+            <input type="submit" value="Send">
+        {{ form_end(form) }}
+    </div>
     <div id="gridCharacterChoice">
-    {% for characterChoice in characterChoices %}
-        <form class="fighterCard" action="{{ path('app_create_character_cp', {id: characterChoice.getId()}) }}" method="POST">
-            <input type="hidden" name="id" value="{{ characterChoice.getId() }}">
+    {% for character_choice in character_choices %}
+        <form class="fighterCard" action="{{ path('app_create_character_cp', {id: character_choice.getId()}) }}" method="POST">
+            <input type="hidden" name="id" value="{{ character_choice.getId() }}">
             <button type="submit">
-                <img class="imgCharacterChoice" src="fighters/250_{{ characterChoice.getImagePath() }}" />
-                <p>{{ characterChoice.getName() }}</p>
-                <img class="imgSerie" src="serie/{{ characterChoice.getSerie().getImagePath() }}" />
+                <img class="imgCharacterChoice" src="fighters/250_{{ character_choice.getImagePath() }}" />
+                <p>{{ character_choice.getName() }}</p>
+                <img class="imgSerie" src="serie/{{ character_choice.getSerie().getImagePath() }}" />
             </button>
         </form>
 

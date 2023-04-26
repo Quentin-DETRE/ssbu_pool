@@ -17,7 +17,7 @@ class CharacterCp
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: CharacterChoice::class, inversedBy: 'characterCps')]
+    #[ORM\ManyToOne(targetEntity: CharacterChoice::class, fetch: 'EAGER', inversedBy: 'characterCps')]
     #[ORM\JoinColumn(nullable: false)]
     private ?characterChoice $characterChoice = null;
 
@@ -25,7 +25,7 @@ class CharacterCp
     #[ORM\JoinColumn(nullable: false)]
     private ?user $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'characterCp', targetEntity: Note::class)]
+    #[ORM\OneToMany(mappedBy: 'characterCp', targetEntity: Note::class, cascade: ["all"])]
     private Collection $notes;
 
     public function __construct()

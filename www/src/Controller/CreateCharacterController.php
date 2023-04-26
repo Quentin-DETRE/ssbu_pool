@@ -3,35 +3,33 @@
 namespace App\Controller;
 
 use App\Entity\CharacterChoice;
-use App\Form\CharacterType;
-use App\Repository\CharacterChoiceRepository;
-use App\Services\CharacterChoiceManager;
+use App\Services\CharacterChoice\CharacterChoiceFormBuilder;
+use App\Services\CharacterChoice\CharacterChoiceFormHandler;
+use App\Services\CharacterChoice\CharacterChoiceManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Imagine\Gd\Imagine;
-use Imagine\Image\Box;
 
 class CreateCharacterController extends AbstractController
 {
     #[Route('/character/create', name: 'app_create_character', methods: 'GET')]
-    public function index(Request $request, EntityManagerInterface $entityManager, CharacterChoiceManager $characterChoiceManager, SluggerInterface $slugger): Response
+    public function index(CharacterChoiceFormBuilder $characterChoiceFormBuilder): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
+        $this->denyAccessUnlessGranted('CHARACTER_CHOICE_EDIT', new CharacterChoice());
         return $this->render('create_character/index.html.twig', [
-            'form' => $this->createForm(CharacterType::class, new CharacterChoice())->createView(),
+            'form' => $characterChoiceFormBuilder->getForm()->createView(),
         ]);
     }
 
     #[Route('/character/create', name: 'app_process_create_character', methods:'POST')]
-    public function createCharacterChoice(Request $request, EntityManagerInterface $entityManager, CharacterChoiceManager $characterChoiceManager, SluggerInterface $slugger): Response
+    public function createCharacterChoice(Request $request, CharacterChoiceFormBuilder $characterChoiceFormBuilder, CharacterChoiceFormHandler $characterChoiceFormHandler, CharacterChoiceManager $characterChoiceManager, SluggerInterface $slugger): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
-        $characterChoiceManager->createCharacter($this->createForm(CharacterType::class, new CharacterChoice()), $slugger,$request);
+        $characterChoiceForm = $characterChoiceFormBuilder->getForm();
+        $characterChoiceFormResult = $characterChoiceFormHandler->handleCreateForm($characterChoiceForm,$request);
+        $characterChoiceManager->createCharacter($characterChoiceFormResult);
+        $this->addFlash("success", "The characterChoice was successfully created !");
         return $this->redirectToRoute('app_character_choice');
     }
 }

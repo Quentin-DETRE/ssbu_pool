@@ -3,38 +3,34 @@
 namespace App\Controller;
 
 use App\Entity\Note;
-use App\Entity\CharacterCp;
-use App\Entity\CharacterChoice;
-use App\Form\NoteType;
-use App\Repository\CharacterChoiceRepository;
-use App\Repository\CharacterCpRepository;
-use App\Repository\NoteRepository;
-use App\Services\NoteManager;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Services\CharacterChoice\CharacterChoiceProvider;
+use App\Services\Note\NoteFormBuilder;
+use App\Services\Note\NoteFormHandler;
+use App\Services\Note\NoteManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 
 class UpdateNoteController extends AbstractController
 {
     #[Route('/update/note/{id}', name: 'app_update_note', methods: 'GET')]
-    public function index(EntityManagerInterface $entityManager, int $id, Request $request, NoteRepository $noteRepository, CharacterCpRepository $characterCpRepository, CharacterChoiceRepository $characterChoiceRepository): Response
+    public function index(Note $note, NoteFormBuilder $noteFormBuilder, CharacterChoiceProvider $characterChoiceProvider): Response
     {
-        $note = $noteRepository->findOneBy(['id' => $id]);
         $this->denyAccessUnlessGranted('NOTE_EDIT', $note);
         return $this->render('update_note/index.html.twig', [
-            'form' => $this->createForm(NoteType::class, $note)->createView(),
-            'characterChoice' => $characterChoiceRepository->findCharacterByIdNote($id),
+            'form' => $noteFormBuilder->getForm($note)->createView(),
+            'character_choice' => $characterChoiceProvider->findCharacterChoiceByNoteId($note->getId()),
         ]);
     }
 
     #[Route('/update/note/{id}', name: 'app_process_update_note', methods: 'POST')]
-    public function updateNote(CharacterChoiceRepository $characterChoiceRepository, NoteManager $noteManager, int $id, Request $request, NoteRepository $noteRepository,): Response
+    public function updateNote(Note $note, CharacterChoiceProvider $characterChoiceProvider, NoteFormHandler $noteFormHandler, NoteFormBuilder $noteFormBuilder, NoteManager $noteManager,  Request $request): Response
     {
-        $this->denyAccessUnlessGranted('NOTE_EDIT', $noteRepository->findOneBy(['id' => $id]));
-        $form = $this->createForm(NoteType::class, $noteRepository->findOneBy(['id' => $id]));
-        $noteManager->updateNote($id, $request, $form);
-        return $this->redirectToRoute('app_character_detail', ['slug' => $characterChoiceRepository->findCharacterByIdNote($id)[0]->getIterationNumber()]);;
+        $noteForm = $noteFormBuilder->getForm($note);
+        $noteFormResult = $noteFormHandler->handleUpdateForm($noteForm, $request);
+        $noteManager->createOrUpdateNote($noteFormResult);
+        $this->addFlash("success", "The note was successfully updated !");
+        return $this->redirectToRoute('app_character_detail', ['iterationNumber' => $characterChoiceProvider->findCharacterChoiceByNoteId($note->getId())->getIterationNumber()]);
     }
 }

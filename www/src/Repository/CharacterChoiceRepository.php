@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\CharacterChoice;
 use App\Entity\Note;
 use App\Entity\User;
+use App\Model\Search\CharacterChoiceSearch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -41,61 +42,25 @@ class CharacterChoiceRepository extends ServiceEntityRepository
         }
     }
 
-    public function getAllCharacterChoices(): array
+    public function getCharacterChoicesByParams(CharacterChoiceSearch $characterChoiceSearch): array
     {
-        return $this->createQueryBuilder('cc')->addSelect('s')
+        $qb = $this->createQueryBuilder('cc')
             ->leftJoin('cc.serie', 's')
-            ->getQuery()->getResult();
-    }
+            ->addSelect('s');
 
-    public function getCharacterChoicesByParams(array $params): array
-    {
-        if ($params['serie'] == null && $params['name'] == null) {
-            return $this->createQueryBuilder('cc')->addSelect('s')
-                ->leftJoin('cc.serie', 's')
-                ->getQuery()->getResult();
-        } else if ($params['serie'] != null && $params['name'] == null) {
-            return $this->createQueryBuilder('cc')->addSelect('s')
-                ->leftJoin('cc.serie', 's')
-                ->Where('s.name LIKE :serie')
-                ->setParameter('serie', '%' . $params['serie']->getName() . '%')
-                ->getQuery()->getResult();
-        } else if ($params['serie'] == null && $params['name'] != null) {
-            return $this->createQueryBuilder('cc')->addSelect('s')
-                ->leftJoin('cc.serie', 's')
-                ->where('cc.name LIKE :name')
-                ->setParameter('name', '%' . $params['name'] . '%')
-                ->getQuery()->getResult();
+        if ($characterChoiceSearch->getName())
+        {
+            $qb->andWhere('cc.name LIKE :name')
+                ->setParameter('name', '%'.$characterChoiceSearch->getName().'%');
         }
-
-        return $this->createQueryBuilder('cc')->addSelect('s')
-            ->leftJoin('cc.serie', 's')
-            ->where('cc.name LIKE :name')
-            ->andWhere('s.name LIKE :serie')
-            ->setParameters(['name' => '%' . $params['name'] . '%', 'serie' => '%' . $params['serie']->getName() . '%'])
-            ->getQuery()->getResult();
+        if ($characterChoiceSearch->getSerie())
+        {
+            $qb->andWhere('cc.serie = :serie')
+                ->setParameter('serie', $characterChoiceSearch->getSerie());
+        }
+        return $qb->getQuery()->getResult();
     }
 
-    public function findOneCharacterChoiceAndCharacterCp(User $user, string $in): array
-    {
-        return $this->createQueryBuilder('cc')->addSelect('cp')
-            ->leftJoin('cc.characterCps', 'cp')
-            ->where('cp.user = :user')
-            ->andWhere('cc.iterationNumber = :in')
-            ->setParameters(['user' => $user, 'in' => $in])
-            ->getQuery()->getResult();
-
-    }
-
-    public function findOneCharacterChoice(string $in): array
-    {
-        return $this->createQueryBuilder('cc')->addSelect('cp')
-            ->leftJoin('cc.characterCps', 'cp')
-            ->where('cc.iterationNumber = :in')
-            ->setParameter('in', $in)
-            ->getQuery()->getResult();
-
-    }
 
     public function findCharacterByIdNote(int $idNote): array
     {

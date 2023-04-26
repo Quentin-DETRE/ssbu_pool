@@ -30,11 +30,11 @@
 
 
 <div class="header"> 
-    <a href="{{ path('app_character_detail', {slug: characterChoice.0.getIterationNumber()}) }}"><button>Retour</button></a>
+    <a href="{{ path('app_character_detail', {iterationNumber: character_choice.getIterationNumber()}) }}"><button>Retour</button></a>
     <h1>SSBU Pool</h1>
     <div class="placeholder"></div>
 </div>
-<div class="example-wrapper">
+<div class="chose-character">
     {{ form_start(form) }}
         {{ form_row(form.title) }}
         {{ form_row(form.content) }}

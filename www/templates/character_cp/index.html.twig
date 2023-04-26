@@ -28,13 +28,13 @@
             <a href="{{ path("app_logout") }}"><button>Logout</button></a>
     </header>
     <div id="gridCharacterCp">
-    {% for characterCp in characterCps %}
-    <a class="fighterCard" href="{{ path("app_character_detail", {slug: characterCp.getCharacterChoice().getIterationNumber()}) }}">
-        <img class="imgCharacterChoice" src="fighters/250_{{ characterCp.getCharacterChoice().getImagePath() }}"/>
-        <p>{{ characterCp.getCharacterChoice().getName() }}</p>
-        <form method="post" action="{{ path("app_cp_drop", {id: characterCp.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
+    {% for character_cp in character_cps %}
+    <a class="fighterCard" href="{{ path("app_character_detail", {iterationNumber: character_cp.getCharacterChoice().getIterationNumber()}) }}">
+        <img class="imgCharacterChoice" src="fighters/250_{{ character_cp.getCharacterChoice().getImagePath() }}"/>
+        <p>{{ character_cp.getCharacterChoice().getName() }}</p>
+        <form method="post" action="{{ path("app_cp_drop", {id: character_cp.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
             <input type="hidden" name="_method" value='DELETE'>
-            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ characterCp.id) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete-character-cp' ~ character_cp.id) }}">
             <button type="submit">Delete</button>
         </form>
     </a>        

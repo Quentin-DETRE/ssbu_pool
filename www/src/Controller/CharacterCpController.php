@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\CharacterCp;
 use App\Entity\User;
-use App\Repository\CharacterCpRepository;
-use App\Services\CharacterCpManager;
+use App\Services\CharacterCp\CharacterCpManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,19 +14,18 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class CharacterCpController extends AbstractController
 {
     #[Route('/pool', name: 'app_character_cp', methods: 'GET')]
-    public function index(UserInterface $user, CharacterCpRepository $characterCpRepository): Response
+    public function index(UserInterface $user): Response
     {
         /** @var User $user */
         return $this->render('character_cp/index.html.twig', [
-            'characterCps' => $characterCpRepository->findAllCpByUser($user),
+            'character_cps' => $user->getCharacterCps(),
         ]);
     }
-
-
-    #[Route('/pool', name: 'app_cp_drop', methods: 'DELETE')]
-    public function dropCp(CharacterCpManager $characterCpManager, Request $request): Response
+    #[Route('/pool/drop/{id}', name: 'app_cp_drop', methods: 'DELETE')]
+    public function dropCp(CharacterCp $characterCp, CharacterCpManager $characterCpManager, Request $request): Response
     {
-        $characterCpManager->removeCharacterOfUser($request->query->get('id'), $request->get('_token'));
+        $characterCpManager->delete($characterCp, $request->get('_token'));
+        $this->addFlash("success", "The character was successfully removed from your pool !");
         return $this->redirectToRoute('app_character_cp');
     }
 }

@@ -16,7 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotNull;
 
-class CharacterType extends AbstractType
+class CharacterChoiceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

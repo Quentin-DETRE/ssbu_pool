@@ -41,19 +41,7 @@ class CharacterCpRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @param User $user
-     * @return array
-     */
-    public function findAllCpByUser(User $user):array
-    {
-        return $this->createQueryBuilder('cp')->addSelect('cc')
-            ->leftJoin('cp.characterChoice', 'cc')
-            ->leftJoin('cp.user', 'u' )
-            ->where("u = :user")
-            ->setParameter('user', $user)
-            ->getQuery()->getResult();
-    }
+
 
     public function findCharacterDetail(string $iterationNumber, User $user): array
     {
@@ -65,16 +53,6 @@ class CharacterCpRepository extends ServiceEntityRepository
             ->where('cc.iterationNumber = :in')
             ->andWhere('u = :user')
             ->setParameters(['in'=> $iterationNumber, 'user'=> $user ])
-            ->getQuery()->getResult();
-    }
-
-    public function findOneCharacterCp(Int $id):array
-    {
-        return $this->createQueryBuilder('cp')->addSelect('n')->addSelect('cc')
-            ->leftJoin('cp.notes', 'n')
-            ->leftJoin('cp.characterChoice', "cc")
-            ->where('cp.id = :id')
-            ->setParameter('id', $id)
             ->getQuery()->getResult();
     }
     //    /**

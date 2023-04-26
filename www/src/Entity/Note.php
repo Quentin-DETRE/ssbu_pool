@@ -14,7 +14,7 @@ class Note
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'notes')]
+    #[ORM\ManyToOne(targetEntity: CharacterCp::class, inversedBy: 'notes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?CharacterCp $characterCp = null;
 

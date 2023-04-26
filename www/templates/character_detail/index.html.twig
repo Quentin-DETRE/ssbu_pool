@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ characterCp.0.getCharacterChoice.getName() }} detail{% endblock %}
+{% block title %}{{ character_cp.getCharacterChoice.getName() }} detail{% endblock %}
 
 {% block body %}
 <style>
@@ -48,23 +48,23 @@
 
 <div class="characterChoiceContainer">
     <div class="imageCharacterChoiceContainer">
-        <img src="/fighters/{{ characterCp.0.getCharacterChoice.getImagePath() }}"></img>
-        <h1>N°{{  characterCp.0.getCharacterChoice.getIterationNumber() }}</h1>
+        <img src="/fighters/{{ character_cp.getCharacterChoice.getImagePath() }}"></img>
+        <h1>N°{{  character_cp.getCharacterChoice.getIterationNumber() }}</h1>
     </div>
     <div class="descriptionCharacterChoiceContainer">
-        <h1>Name : {{ characterCp.0.getCharacterChoice.getName() }}</h1>
-        <h3 id="serie">Serie : {{ characterCp.0.getCharacterChoice.getSerie().getName() }}<img src="/serie/{{ characterCp.0.getCharacterChoice.getSerie().getImagePath()}}"/></h3>
+        <h1>Name : {{ character_cp.getCharacterChoice.getName() }}</h1>
+        <h3 id="serie">Serie : {{ character_cp.getCharacterChoice.getSerie().getName() }}<img src="/serie/{{ character_cp.getCharacterChoice.getSerie().getImagePath()}}"/></h3>
         
-        <h3>Weight : {{ characterCp.0.getCharacterChoice.getWeight() }}</h3>
-        <h3>Speed : {{ characterCp.0.getCharacterChoice.getSpeed() }}</h3>
-        <h3>Tier : {{ characterCp.0.getCharacterChoice.getTier() }}</h3>
+        <h3>Weight : {{ character_cp.getCharacterChoice.getWeight() }}</h3>
+        <h3>Speed : {{ character_cp.getCharacterChoice.getSpeed() }}</h3>
+        <h3>Tier : {{ character_cp.getCharacterChoice.getTier() }}</h3>
 
         {% if is_granted("ROLE_SUPER_ADMIN") %}
         <div class="adminOption">
-            <a href="{{ path("app_update_character", {slug: characterCp.0.getCharacterChoice.getIterationNumber()}) }}"><button>Edit</button></a>
-            <form method="post" action="{{ path("app_character_detail_delete", {slug: characterCp.0.getCharacterChoice.getIterationNumber()}) }}" onsubmit="return confirm('Are you sure ?')">
+            <a href="{{ path("app_update_character", {slug: character_cp.getCharacterChoice.getIterationNumber()}) }}"><button>Edit</button></a>
+            <form method="post" action="{{ path("app_character_detail_delete_character", {iterationNumber: character_cp.getCharacterChoice.getIterationNumber()}) }}" onsubmit="return confirm('Are you sure ?')">
                 <input type="hidden" name="_method" value='DELETE'>
-                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ characterCp.0.getCharacterChoice.id) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete-character-choice' ~ character_cp.getCharacterChoice.id) }}">
                 <button type="submit">Delete</button>
             </form>
         </div>
@@ -83,22 +83,20 @@
         <div>
             <div class="topNote">
             <h1>{{ note.title }}</h1>
-                {% if ( is_granted('NOTE_VIEW', note)) or ( is_granted("ROLE_ADMIN") ) %}
                 <div class="noteButton">
-                    {% if is_granted('NOTE_VIEW', note) %}
-                    <a href="{{ path("app_update_note", {id: note.getId()}) }}">
-                        <button>Edit</button>
-                    </a>
+                    {% if is_granted('NOTE_EDIT', note) %}
+                        <a href="{{ path("app_update_note", {id: note.getId()}) }}">
+                            <button>Edit</button>
+                        </a>
                     {% endif %}
-
-                    <form method="post" action="{{ path("app_character_detail_delete", {slug: characterCp.0.getCharacterChoice.getIterationNumber(), id: note.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
+                    {% if is_granted('NOTE_DELETE', note) %}
+                    <form method="post" action="{{ path("app_character_detail_delete_note", {iterationNumber: character_cp.getCharacterChoice.getIterationNumber(), id: note.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
                         <input type="hidden" name="_method" value='DELETE'>
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ note.id) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete-note' ~ note.id) }}">
                         <button type="submit">Delete</button>
                     </form>
-
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
             <p>{{ note.content }}</p>
         </div>
