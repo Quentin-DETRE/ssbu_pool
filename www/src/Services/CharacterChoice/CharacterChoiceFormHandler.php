@@ -29,7 +29,7 @@ class CharacterChoiceFormHandler
         return new CharacterChoiceSearch();
     }
 
-    public function handleCreateForm(FormInterface $form, Request $request): CharacterChoice
+    public function handleCreateForm(FormInterface $form, Request $request): ?CharacterChoice
     {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -74,7 +74,7 @@ class CharacterChoiceFormHandler
 
             return $characterChoice;
         }
-        return new CharacterChoice();
+        return null;
     }
 
     public function handleUpdateForm(FormInterface $form, Request $request ):CharacterChoice

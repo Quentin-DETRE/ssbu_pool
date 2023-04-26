@@ -6,10 +6,12 @@ use App\Entity\Serie;
 use App\Repository\CharacterChoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterChoiceRepository::class)]
+#[UniqueEntity(fields: ['iterationNumber'], message: 'There is already a character with this number')]
 class CharacterChoice
 {
     #[ORM\Id]
@@ -43,8 +45,9 @@ class CharacterChoice
     #[Assert\Length(max: 3)]
     private ?string $tier = null;
 
-    #[ORM\Column(length: 10)]
+    #[ORM\Column(length: 10, unique: true)]
     #[Assert\NotNull()]
+    #[Assert\UniqueEntity]
     #[Assert\Length(max: 10)]
     private ?string $iterationNumber = null;
 

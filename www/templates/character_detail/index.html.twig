@@ -61,7 +61,7 @@
 
         {% if is_granted("ROLE_SUPER_ADMIN") %}
         <div class="adminOption">
-            <a href="{{ path("app_update_character", {slug: character_cp.getCharacterChoice.getIterationNumber()}) }}"><button>Edit</button></a>
+            <a href="{{ path("app_update_character", {iterationNumber: character_cp.getCharacterChoice.getIterationNumber()}) }}"><button>Edit</button></a>
             <form method="post" action="{{ path("app_character_detail_delete_character", {iterationNumber: character_cp.getCharacterChoice.getIterationNumber()}) }}" onsubmit="return confirm('Are you sure ?')">
                 <input type="hidden" name="_method" value='DELETE'>
                 <input type="hidden" name="_token" value="{{ csrf_token('delete-character-choice' ~ character_cp.getCharacterChoice.id) }}">
