@@ -24,14 +24,12 @@ class NoteManager
 
     public function createOrUpdateNote(Note $note): Note
     {
-        $this->authorizationChecker->isGranted('NOTE_EDIT', $note);
         $this->entityManager->persist($note);
         $this->entityManager->flush();
         return $note;
     }
     public function deleteNote(Note $note, string $token):void
     {
-        $this->authorizationChecker->isGranted('NOTE_DELETE', $note);
         if ($this->csrfTokenManager->isTokenValid(new CsrfToken('delete-note' . $note->getId(), $token))) {
             $this->entityManager->remove($note);
             $this->entityManager->flush();

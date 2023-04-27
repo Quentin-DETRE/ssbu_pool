@@ -21,6 +21,10 @@ class NoteProvider
     {
         return $this->noteRepository->findBy(['characterCp' => $characterCp]);
     }
+    public function findAllNotesByCharacterCp(CharacterCp $characterCp): ?array
+    {
+        return $this->noteRepository->findAllNotesByCharacterCp($characterCp);
+    }
     public function findNotesByIterationNumber(string $iterationNumber):?   array
     {
         return $this->noteRepository->findByInterationNumber($iterationNumber);

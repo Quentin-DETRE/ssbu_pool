@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\CharacterChoice;
 use App\Exception\AlreadyHaveCharacterException;
+use App\Security\Voter\CharacterChoiceVoter;
 use App\Services\CharacterChoice\CharacterChoiceFormBuilder;
 use App\Services\CharacterChoice\CharacterChoiceFormHandler;
 use App\Services\CharacterChoice\CharacterChoiceProvider;

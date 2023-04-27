@@ -65,7 +65,7 @@
         </form>
 
     {% endfor %}
-    {% if is_granted("ROLE_ADMIN") %}
+    {% if is_granted(constant('App\\Security\\Voter\\CharacterChoiceVoter::EDIT'), character_choices[0]) %}
     <a class="fighterCard" href="{{ path("app_create_character") }}"><img class="imgCharacterChoice" src="plus.webp"/>Add a character</a>
     {% endif %}
     </div>

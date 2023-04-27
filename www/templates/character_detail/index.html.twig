@@ -59,16 +59,20 @@
         <h3>Speed : {{ character_cp.getCharacterChoice.getSpeed() }}</h3>
         <h3>Tier : {{ character_cp.getCharacterChoice.getTier() }}</h3>
 
-        {% if is_granted("ROLE_SUPER_ADMIN") %}
+
         <div class="adminOption">
+            {% if is_granted(constant('App\\Security\\Voter\\CharacterChoiceVoter::EDIT'), character_cp.getCharacterChoice) %}
             <a href="{{ path("app_update_character", {iterationNumber: character_cp.getCharacterChoice.getIterationNumber()}) }}"><button>Edit</button></a>
+            {% endif %}
+            {% if is_granted(constant('App\\Security\\Voter\\CharacterChoiceVoter::DELETE'), character_cp.getCharacterChoice) %}
             <form method="post" action="{{ path("app_character_detail_delete_character", {iterationNumber: character_cp.getCharacterChoice.getIterationNumber()}) }}" onsubmit="return confirm('Are you sure ?')">
                 <input type="hidden" name="_method" value='DELETE'>
                 <input type="hidden" name="_token" value="{{ csrf_token('delete-character-choice' ~ character_cp.getCharacterChoice.id) }}">
                 <button type="submit">Delete</button>
             </form>
+            {% endif %}
         </div>
-        {% endif %}
+
         <div class="formNoteContainer">
             <h1>Create a note</h1>
             {{ form_start(form) }}
@@ -84,12 +88,12 @@
             <div class="topNote">
             <h1>{{ note.title }}</h1>
                 <div class="noteButton">
-                    {% if is_granted('NOTE_EDIT', note) %}
+                    {% if is_granted(constant('App\\Security\\Voter\\NoteVoter::EDIT'), note) %}
                         <a href="{{ path("app_update_note", {id: note.getId()}) }}">
                             <button>Edit</button>
                         </a>
                     {% endif %}
-                    {% if is_granted('NOTE_DELETE', note) %}
+                    {% if is_granted(constant('App\\Security\\Voter\\NoteVoter::DELETE'), note) %}
                     <form method="post" action="{{ path("app_character_detail_delete_note", {iterationNumber: character_cp.getCharacterChoice.getIterationNumber(), id: note.getId()}) }}" onsubmit="return confirm('Are you sure ?')">
                         <input type="hidden" name="_method" value='DELETE'>
                         <input type="hidden" name="_token" value="{{ csrf_token('delete-note' ~ note.id) }}">

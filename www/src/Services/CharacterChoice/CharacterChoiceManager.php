@@ -4,6 +4,7 @@ namespace App\Services\CharacterChoice;
 
 use App\Entity\CharacterChoice;
 use App\Repository\NoteRepository;
+use App\Security\Voter\CharacterChoiceVoter;
 use App\Services\Note\NoteProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -29,7 +30,6 @@ class CharacterChoiceManager
 
     public function createCharacter(CharacterChoice $characterChoice): CharacterChoice
     {
-        $this->authorizationChecker->isGranted('CHARACTER_CHOICE_EDIT', $characterChoice);
         $this->entityManager->persist($characterChoice);
         $this->entityManager->flush();
         return $characterChoice;
@@ -44,7 +44,6 @@ class CharacterChoiceManager
 
     public function deleteCharacter( array $characterCps, CharacterChoice $characterChoice, string $token): void
     {
-        $this->authorizationChecker->isGranted('CHARACTER_CHOICE_DELETE', $characterChoice);
         if ($this->csrfTokenManager->isTokenValid(new CsrfToken('delete-character-choice' . $characterChoice->getId(), $token))) {
             $filesystem = new Filesystem();
             foreach ($characterCps as $characterCp) {

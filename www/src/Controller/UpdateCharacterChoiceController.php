@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\CharacterChoice;
+use App\Security\Voter\CharacterChoiceVoter;
 use App\Services\CharacterChoice\CharacterChoiceFormBuilder;
 use App\Services\CharacterChoice\CharacterChoiceFormHandler;
 use App\Services\CharacterChoice\CharacterChoiceManager;
@@ -13,21 +15,20 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UpdateCharacterChoiceController extends AbstractController
 {
-    #[Route('/character/update/{slug}', name: 'app_update_character', methods: 'GET')]
-    public function index(CharacterChoiceProvider $characterChoiceProvider, CharacterChoiceFormBuilder $characterChoiceFormBuilder, string $slug): Response
+    #[Route('/character/update/{iterationNumber}', name: 'app_update_character', methods: 'GET')]
+    public function index(CharacterChoice $characterChoice, CharacterChoiceFormBuilder $characterChoiceFormBuilder): Response
     {
-        $characterChoice = $characterChoiceProvider->findCharacterChoiceByIterationNumber($slug);
-        $this->denyAccessUnlessGranted('CHARACTER_CHOICE_EDIT', $characterChoice);
+        $this->denyAccessUnlessGranted(CharacterChoiceVoter::EDIT, $characterChoice);
         return $this->render('update_character/index.html.twig', [
             'form' => $characterChoiceFormBuilder->getForm($characterChoice)->createView(),
             'character_choice' => $characterChoice,
         ]);
     }
 
-    #[Route('/character/update/{slug}', name: 'app_process_update_character', methods: 'POST')]
-    public function updateCharacterController(CharacterChoiceFormBuilder $characterChoiceFormBuilder, CharacterChoiceFormHandler $characterChoiceFormHandler, CharacterChoiceProvider $characterChoiceProvider, CharacterChoiceManager $characterChoiceManager, Request $request, string $slug): Response
+    #[Route('//character/update/{iterationNumber}', name: 'app_process_update_character', methods: 'POST')]
+    public function updateCharacterController(CharacterChoice $characterChoice, CharacterChoiceFormBuilder $characterChoiceFormBuilder, CharacterChoiceFormHandler $characterChoiceFormHandler, CharacterChoiceProvider $characterChoiceProvider, CharacterChoiceManager $characterChoiceManager, Request $request): Response
     {
-        $characterChoice = $characterChoiceProvider->findCharacterChoiceByIterationNumber($slug);
+        $this->denyAccessUnlessGranted(CharacterChoiceVoter::EDIT, $characterChoice);
         $characterChoiceForm = $characterChoiceFormBuilder->getForm($characterChoice);
         $characterChoice = $characterChoiceFormHandler->handleUpdateForm($characterChoiceForm, $request);
         $characterChoiceManager->updateCharacter($characterChoice);

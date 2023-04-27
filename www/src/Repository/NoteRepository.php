@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CharacterChoice;
+use App\Entity\CharacterCp;
 use App\Entity\Note;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -49,6 +50,16 @@ class NoteRepository extends ServiceEntityRepository
             ->leftJoin('cp.characterChoice', 'cc')
             ->where('cc.iterationNumber = :iterationNumber')
             ->setParameter('iterationNumber', $iterationNumber)
+            ->getQuery()->getResult();
+    }
+
+    public function findAllNotesByCharacterCp(CharacterCp $characterCp): array {
+        return $this->createQueryBuilder('n')
+            ->select('n', 'cp', 'cc')
+            ->leftJoin('n.characterCp', 'cp')
+            ->leftJoin('cp.characterChoice', 'cc')
+            ->where('cc = :characterChoice')
+            ->setParameter('characterChoice', $characterCp->getCharacterChoice())
             ->getQuery()->getResult();
     }
 

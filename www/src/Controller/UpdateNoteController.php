@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Note;
+use App\Security\Voter\NoteVoter;
 use App\Services\CharacterChoice\CharacterChoiceProvider;
 use App\Services\Note\NoteFormBuilder;
 use App\Services\Note\NoteFormHandler;
@@ -17,7 +18,7 @@ class UpdateNoteController extends AbstractController
     #[Route('/update/note/{id}', name: 'app_update_note', methods: 'GET')]
     public function index(Note $note, NoteFormBuilder $noteFormBuilder, CharacterChoiceProvider $characterChoiceProvider): Response
     {
-        $this->denyAccessUnlessGranted('NOTE_EDIT', $note);
+        $this->denyAccessUnlessGranted(NoteVoter::EDIT, $note);
         return $this->render('update_note/index.html.twig', [
             'form' => $noteFormBuilder->getForm($note)->createView(),
             'character_choice' => $characterChoiceProvider->findCharacterChoiceByNoteId($note->getId()),
@@ -27,6 +28,7 @@ class UpdateNoteController extends AbstractController
     #[Route('/update/note/{id}', name: 'app_process_update_note', methods: 'POST')]
     public function updateNote(Note $note, CharacterChoiceProvider $characterChoiceProvider, NoteFormHandler $noteFormHandler, NoteFormBuilder $noteFormBuilder, NoteManager $noteManager,  Request $request): Response
     {
+        $this->denyAccessUnlessGranted(NoteVoter::EDIT, $note);
         $noteForm = $noteFormBuilder->getForm($note);
         $noteFormResult = $noteFormHandler->handleUpdateForm($noteForm, $request);
         $noteManager->createOrUpdateNote($noteFormResult);
