@@ -755,6 +755,14 @@ class CharacterChoiceFixtures extends Fixture implements DependentFixtureInterfa
                 "iteration_number" => "82",
                 "image_path" => "Sora_SSBU.png"
             ],
+            "Character Fixture" => [
+                "serie" => "Castlevania",
+                "weight" => "Heavyweight",
+                "speed" => "Average+",
+                "tier" => "A+",
+                "iteration_number" => "83",
+                "image_path" => "Mario_SSBU.png"
+            ],
         ];
     }
 }

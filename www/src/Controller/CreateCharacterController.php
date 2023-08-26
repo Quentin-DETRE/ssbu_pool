@@ -20,7 +20,6 @@ class CreateCharacterController extends AbstractController
         $this->denyAccessUnlessGranted(CharacterChoiceVoter::CREATE, new CharacterChoice());
         $characterChoiceForm = $characterChoiceFormBuilder->getForm();
         $characterChoice = $characterChoiceFormHandler->handleCreateForm($characterChoiceForm, $request);
-        dump($request);
         if ($characterChoice) {
             $this->denyAccessUnlessGranted(CharacterChoiceVoter::CREATE, $characterChoice);
             $characterChoiceManager->createCharacter($characterChoice);

@@ -39,8 +39,6 @@ class CharacterCpFixtures extends Fixture implements DependentFixtureInterface
             'championName' => [
                 0 => '65',
                 1 => '72',
-                2 => '02',
-                3 => '62',
             ],
         ]];
     }

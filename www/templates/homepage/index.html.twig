@@ -3,39 +3,168 @@
 {% block title %}SSBU Pool{% endblock %}
 
 {% block body %}
-<style>
-*{font: 18px/1.5 sans-serif; margin:0; padding:0;}
-    body {display:flex; height:100vh; width:100vw;flex-direction:column; align-items:center; background: linear-gradient(white, 85% ,#bf0000); }
-    h1 {font-weight:bold; font-size:2em; width:fit-content;}
-    h2 {font-size:1.5em; padding:0; margin-bottom:0;width:fit-content;}
-    h3 {font-size:1.25em; margin-top:0.5vh; margin-bottom:0.5vh;width:fit-content; }
+    <style>
+        * {
+            font: 18px/1.5 sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-    .header {display: flex; justify-content:space-between; align-items:center; width:100vw; margin:0; padding:0; box-shadow: 0px 0px 5px black;  }
-    button{padding:5px; padding-left:10px; padding-right:10px; background-color:#990000; color:white; border:none; border-radius:0.5em}
-    button:hover {cursor:pointer; background-color:#690000;}
+        body {
+            display: flex;
+            min-height: 100vh;
+            width: 100vw;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(white, 85%, #bf0000);
+        }
+
+        h1 {
+            font-weight: bold;
+            font-size: 2.5em;
+            width: fit-content;
+        }
+
+        h2 {
+            font-size: 2em;
+            font-weight: bold;
+            padding: 0;
+            margin-bottom: 0;
+            width: fit-content;
+        }
 
 
-    .loginOption { position: inherit; display: flex; justify-content:space-evenly;}
+        p {
+            font-size: 1.25em;
+            margin-top: 0.5vh;
+            margin-bottom: 0.5vh;
+            width: fit-content;
+        }
 
-    .loginOption button {margin-right:1vw;}
+        header {
+            display: flex;
+            align-items: center;
+            width:100%;
+        }
+        .head_text{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            box-shadow: 0px 0px 5px black;
+        }
 
-    .descriptionCharacterChoiceContainer {width:60vw; display:flex; justify-content:center;  flex-direction:column;}
+        button {
+            padding: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            background-color: #990000;
+            color: white;
+            border: none;
+            border-radius: 0.5em
+        }
 
-</style>
+        button:hover {
+            cursor: pointer;
+            background-color: #690000;
+        }
+
+        .loginOption {
+            display: flex;
+            margin-left: -18%;
+        }
+
+        .loginOption button {
+            margin-left: 1vw;
+        }
+
+        .descriptionContainer {
+            display: flex;
+            justify-content: space-evenly;
+            flex-direction: column;
+            width: 100vw;
+            flex: 1;
+        }
+
+        .descriptionContainer h1 {
+            align-self: center;
+            color: white;
+            background-color: #bf0000;
+            padding: 1vw;
+            border-radius: 0.5em;
+        }
+
+        .descriptionContainer a {
+            color: inherit;
+            align-self: center;
+            text-decoration: none;
+        }
+
+        .descriptionContainer a :hover {
+            transform: scale(1.01);
+            transition: ease, 100ms;
+        }
+
+        .descriptionContainer h2 {
+            align-self: center;
+
+        }
+
+        #paragraphContainer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+        }
+
+        .descriptionContainer p {
+            width: 40vw;
+        }
+
+        #paragraphContainer img {
+            width: 20vw;
+            height: 9vw;
+        }
+
+        footer img {
+            width: 100vw;
+            margin-bottom: -0.8vh;
+        }
+
+    </style>
 
 
-<div class="header"> 
-    <div class="placeholder"></div>
-    <h1>SSBU Pool<h1>
-    <div class="loginOption">
-        <a class="loginBtn" href="{{ path("app_login") }}"><button>Login</button></a>
-        <a class="registerBtn" href="{{ path("app_register") }}"><button>Register</button></a>
+    <header>
+        <div class="placeholder"></div>
+        <div class="head_text">
+            <h2>SSBU Pool</h2>
+        </div>
+        <div class="loginOption">
+            <a class="loginBtn" href="{{ path("app_login") }}">
+                <button>Login</button>
+            </a>
+            <a class="registerBtn" href="{{ path("app_register") }}">
+                <button>Register</button>
+            </a>
+        </div>
+
+    </header>
+
+    <div class="descriptionContainer">
+        <h2>Welcome to your Super Smash Bros Ultimate Champion pool !</h2>
+        <div id="paragraphContainer">
+            <p>By logging or registering, you will be able to create and configure your SSBU champion pool, check trivia
+                about your character, stats, and you can add notes to your characters in order to index certain tips,
+                things
+                you want to train or infos relatives to specific match ups !</p>
+            <img src="Super_Smash_Bros._Ultimate_Logo.png">
+        </div>
+        <a href="{{ path("app_register") }}"><h1>CREATE AN ACCOUNT NOW !</h1></a>
     </div>
+    <footer>
+        <img src="final_roaster.jpeg">
+    </footer>
 
-</div>
-
-<div class="descriptionContainer">
-    <h1>Welcome to your Super Smash Bros Ultimate Champion pool !</h1>
-    <p>By logging or registering, you will be able to create and configure your SSBU champion pool, check trivia about your character, stats, and you can add notes to your characters in order to index certain tips, things you want to train or infos relatives to specific match ups</p>
-</div>
 {% endblock %}

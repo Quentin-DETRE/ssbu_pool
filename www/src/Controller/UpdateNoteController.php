@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UpdateNoteController extends AbstractController
 {
-    #[Route('/update/note/{id}', name: 'app_update_note', methods: 'GET')]
+    #[Route('/note/update/{id}', name: 'app_update_note', methods: 'GET')]
     public function index(Note $note, NoteFormBuilder $noteFormBuilder, CharacterChoiceProvider $characterChoiceProvider): Response
     {
         $this->denyAccessUnlessGranted(NoteVoter::EDIT, $note);
@@ -25,7 +25,7 @@ class UpdateNoteController extends AbstractController
         ]);
     }
 
-    #[Route('/update/note/{id}', name: 'app_process_update_note', methods: 'POST')]
+    #[Route('/note/update/{id}', name: 'app_process_update_note', methods: 'POST')]
     public function updateNote(Note $note, CharacterChoiceProvider $characterChoiceProvider, NoteFormHandler $noteFormHandler, NoteFormBuilder $noteFormBuilder, NoteManager $noteManager,  Request $request): Response
     {
         $this->denyAccessUnlessGranted(NoteVoter::EDIT, $note);
